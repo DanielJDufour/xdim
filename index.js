@@ -37,6 +37,9 @@ function parseDimensions (str) {
   return dims;
 }
 
+const parseVectors = str => str.match(/\[[^\]]+\]/g);
+
 module.exports = {
-  parseDimensions
+  parseDimensions,
+  parseVectors
 };

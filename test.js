@@ -1,18 +1,31 @@
 const test = require("flug");
-const { parseDimensions } = require('./index');
+const { parseDimensions, parseVectors } = require('./index');
 
 test("parseDimensions", ({ eq }) => {
-  eq(parseDimensions("[row][column]"), {
-    row: { name: "row" },
-    column: { name: "column" }
-  });
+  eq(
+    parseDimensions("[row][column]"),
+    {
+      row: { name: "row" },
+      column: { name: "column" }
+    }
+  );
 
-  eq(parseDimensions("[band][row,column]"), {
-    band: { name: "band" },
-    row: { name: "row" },
-    column: { name: "column" }
-  });
+  eq(
+    parseDimensions("[band][row,column]"),
+    {
+      band: { name: "band" },
+      row: { name: "row" },
+      column: { name: "column" }
+    }
+  );
 });
+
+test("parseVectors", ({ eq }) => {
+  eq(
+    parseVectors("[row][column]"),
+    [ '[row]', '[column]' ]
+  );
+})
 
 // test("table", ({ eq }) => {
 //   const keypad = [
