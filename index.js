@@ -44,8 +44,16 @@ const parseSequences = str => {
   }
 };
 
+function checkValidity (str) {
+  const invalid = str.match(/[^ A-Za-z,\[\]]/g);
+  if (invalid) {
+    throw new Error("The following invalid characters were used: " + invalid.map(c => `"${c}"`).join(", "));
+  } else {
+    return true;
+  }
+}
+
 function parse (str) {
-  const dims = parseDimensions(str);
   const vectors = parseVectors(str);
   return {
     type: "Layout",
@@ -101,6 +109,7 @@ function select ({ data, debugLevel=0, layout, point, sizes={} }) {
 
 
 module.exports = {
+  checkValidity,
   matchSequences,
   parse,
   parseDimensions,
