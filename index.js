@@ -73,22 +73,52 @@ const parseSequences = str => {
 function parse (str) {
   const dims = parseDimensions(str);
   const vectors = parseVectors(str);
-
-  vectors.map((vector, i) => {
-    // remove outer braces [ ... ]
-    const braceless = removeBraces(vector);
-
-    // remove parentheses if its exists
-    // as it's not required
-    const parenfree = removeParentheses(braceless);
-
-    console.log("parenfree:", [parenfree]);
-
-    const sequences = parseSequences(parenfree);
-    
-  });
-
+  return {
+    type: "Layout",
+    dims: vectors.map(parseSequences)
+  };
 }
+
+function select ({ data, debugLevel=0, layout, point, sizes={} }) {
+  if (debugLevel >= 1) console.log("starting select with", { data, debugLevel, layout, point });
+
+  // converts layout expression to a Layout object
+  if (typeof layout === "string") layout = parse(layout);
+  if (debugLevel >= 2) console.log("layout object is:", layout);
+
+  const dims = Object.keys(point);
+
+  // dims are arrays
+  // let obj = data;
+  return layout.dims.reduce((data, arr) => {
+    if (debugLevel >= 2) console.log("arr:", arr);
+    if (arr.type === "Vector") {
+      const i = point[arr.dim];
+      data = data[i];
+    } else if (arr.type === "Matrix") {
+      const { parts } = arr;
+      let offset = 0;
+      let multiplier = 1;
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const part = parts[i];
+        // console.log({part});
+        if (part.type === "Vector") {
+          // console.log({multiplier});
+          const { dim } = part;
+          offset += multiplier * point[dim];
+          // console.log({offset, sizes, dim});
+          if (i > 0) {
+            if (!(dim in sizes)) throw new Error(`you cannot calculate the location without knowing the size of the "${dim}" dimension.`);
+            multiplier *= sizes[dim];  
+          }
+        }
+      }
+      data = data[offset];
+    }
+    return data;
+  }, data);
+}
+
 
 module.exports = {
   matchSequences,
@@ -98,4 +128,5 @@ module.exports = {
   parseVectors,
   removeBraces,
   removeParentheses,
+  select
 };
