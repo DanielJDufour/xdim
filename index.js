@@ -1,29 +1,3 @@
-const { forEach, map } = require("advarr");
-/*
-  examples:
-  [row][column] is
-
-  {
-    dimensions: {
-      "row": {
-        name: "row",
-        size: Infinite
-      },
-      "column": {
-        name: "column",
-        size: Infinite
-      }
-    },
-    sequence: {
-      type: "Sequence",
-      sequences: [
-        
-      ]
-    }
-  }
-
-
-*/
 function parseDimensions (str) {
   const dims = {};
   const re = /[A-Za-z]+/g;
