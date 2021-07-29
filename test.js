@@ -119,18 +119,23 @@ test("select all reds then all greens then all blues then all alphas in one flat
     14, 15
   ];
 
-  const layout = "[band,(row,column)]";
+  const layout = "[band,row,column]";
   // bottom left blue
   const point = {
     band: 2, // blue
     row: 1, // second row
     column: 0 // first column
+  };
+  const sizes = {
+    column: 2,
+    row: 2
   }
   const value = select({
     data,
     debugLevel: 3,
     layout,
-    point
+    point,
+    sizes
   });
   eq(value, 10);
 });
