@@ -54,6 +54,8 @@ function checkValidity (str) {
 }
 
 function parse (str) {
+  checkValidity(str);
+  
   const vectors = parseVectors(str);
   return {
     type: "Layout",
