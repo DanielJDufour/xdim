@@ -1,38 +1,21 @@
 const test = require("flug");
-const {
-  matchSequences,
-  parse,
-  parseDimensions,
-  parseSequences,
-  parseVectors,
-  removeBraces,
-  removeParentheses
-} = require('../index');
+const { matchSequences, parse, parseDimensions, parseSequences, parseVectors, removeBraces, removeParentheses } = require("../index");
 
 test("parseDimensions", ({ eq }) => {
-  eq(
-    parseDimensions("[row][column]"),
-    {
-      row: { name: "row" },
-      column: { name: "column" }
-    }
-  );
+  eq(parseDimensions("[row][column]"), {
+    row: { name: "row" },
+    column: { name: "column" }
+  });
 
-  eq(
-    parseDimensions("[band][row,column]"),
-    {
-      band: { name: "band" },
-      row: { name: "row" },
-      column: { name: "column" }
-    }
-  );
+  eq(parseDimensions("[band][row,column]"), {
+    band: { name: "band" },
+    row: { name: "row" },
+    column: { name: "column" }
+  });
 });
 
 test("parseVectors", ({ eq }) => {
-  eq(
-    parseVectors("[row][column]"),
-    [ '[row]', '[column]' ]
-  );
+  eq(parseVectors("[row][column]"), ["[row]", "[column]"]);
 });
 
 test("removing braces", ({ eq }) => {
@@ -71,7 +54,7 @@ test("parsing multi-level vectors", ({ eq }) => {
   eq(result, {
     type: "Matrix",
     parts: [
-      {type: "Vector", dim: "band" },
+      { type: "Vector", dim: "band" },
       {
         type: "Matrix",
         parts: [
@@ -80,7 +63,7 @@ test("parsing multi-level vectors", ({ eq }) => {
         ]
       }
     ]
-  })
+  });
 });
 
 test("table", ({ eq }) => {
@@ -93,8 +76,11 @@ test("table", ({ eq }) => {
   const syntax = "[row][column]";
   const layout = parse(syntax);
   eq(layout, {
-    type: 'Layout',
-    dims: [ { type: 'Vector', dim: 'row' }, { type: 'Vector', dim: 'column' } ]
+    type: "Layout",
+    dims: [
+      { type: "Vector", dim: "row" },
+      { type: "Vector", dim: "column" }
+    ]
   });
 });
 
@@ -108,14 +94,14 @@ test("imagedata", ({ eq }) => {
   const syntax = "[band,row,column]";
   const layout = parse(syntax);
   eq(layout, {
-    "type": "Layout",
-    "dims": [
+    type: "Layout",
+    dims: [
       {
-        "type":"Matrix",
-        "parts": [
-          {"type":"Vector","dim":"band"},
-          {"type":"Vector","dim":"row"},
-          {"type":"Vector","dim":"column"}
+        type: "Matrix",
+        parts: [
+          { type: "Vector", dim: "band" },
+          { type: "Vector", dim: "row" },
+          { type: "Vector", dim: "column" }
         ]
       }
     ]
@@ -128,12 +114,12 @@ test("geotiff", ({ eq }) => {
   eq(layout, {
     type: "Layout",
     dims: [
-      { type: "Vector", "dim": "band" },
+      { type: "Vector", dim: "band" },
       {
         type: "Matrix",
         parts: [
-          {"type":"Vector","dim":"row"},
-          {"type":"Vector","dim":"column"}
+          { type: "Vector", dim: "row" },
+          { type: "Vector", dim: "column" }
         ]
       }
     ]

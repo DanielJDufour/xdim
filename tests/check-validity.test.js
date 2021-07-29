@@ -9,7 +9,7 @@ test("valid", ({ eq }) => {
 test("invalid", ({ eq }) => {
   let msg;
   try {
-    checkValidity("[band,(row,column)]")
+    checkValidity("[band,(row,column)]");
   } catch (e) {
     msg = e.message;
   }

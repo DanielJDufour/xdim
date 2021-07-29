@@ -1,4 +1,4 @@
-function parseDimensions (str) {
+function parseDimensions(str) {
   const dims = {};
   const re = /[A-Za-z]+/g;
   let arr;
@@ -14,10 +14,10 @@ function parseDimensions (str) {
 const parseVectors = str => str.match(/\[[^\]]+\]/g);
 
 // "[row]" to "row"
-const removeBraces = str => str.startsWith("[") && str.endsWith("]") ? str.substring(1, str.length - 1) : str;
+const removeBraces = str => (str.startsWith("[") && str.endsWith("]") ? str.substring(1, str.length - 1) : str);
 
 // "(row)" to "row"
-const removeParentheses = str => str.startsWith("(") && str.endsWith(")") ? str.substring(1, str.length - 1) : str;
+const removeParentheses = str => (str.startsWith("(") && str.endsWith(")") ? str.substring(1, str.length - 1) : str);
 
 // sort of like parsing a CSV except instead of " for quotes use (
 const matchSequences = str => str.match(/(\(.*?\)|[^\(,\s]+)(?=\s*,|\s*$)/g);
@@ -40,11 +40,11 @@ const parseSequences = str => {
     return {
       type: "Matrix",
       parts: seqs.map(parseSequences)
-    }
+    };
   }
 };
 
-function checkValidity (str) {
+function checkValidity(str) {
   const invalid = str.match(/[^ A-Za-z,\[\]]/g);
   if (invalid) {
     throw new Error("The following invalid characters were used: " + invalid.map(c => `"${c}"`).join(", "));
@@ -53,9 +53,9 @@ function checkValidity (str) {
   }
 }
 
-function parse (str) {
+function parse(str) {
   checkValidity(str);
-  
+
   const vectors = parseVectors(str);
   return {
     type: "Layout",
@@ -63,7 +63,7 @@ function parse (str) {
   };
 }
 
-function select ({ data, debugLevel=0, layout, point, sizes={} }) {
+function select({ data, debugLevel = 0, layout, point, sizes = {} }) {
   if (debugLevel >= 1) console.log("starting select with", { data, debugLevel, layout, point });
 
   // converts layout expression to a Layout object
@@ -74,7 +74,7 @@ function select ({ data, debugLevel=0, layout, point, sizes={} }) {
 
   // dims are arrays
   // let obj = data;
-  return layout.dims.reduce((data, arr) => {
+  const value = layout.dims.reduce((data, arr) => {
     if (debugLevel >= 2) console.log("arr:", arr);
     if (arr.type === "Vector") {
       const i = point[arr.dim];
@@ -99,7 +99,7 @@ function select ({ data, debugLevel=0, layout, point, sizes={} }) {
           // console.log({offset, sizes, dim});
           if (i > 0) {
             if (!(dim in sizes)) throw new Error(`you cannot calculate the location without knowing the size of the "${dim}" dimension.`);
-            multiplier *= sizes[dim];  
+            multiplier *= sizes[dim];
           }
         }
       }
@@ -107,8 +107,9 @@ function select ({ data, debugLevel=0, layout, point, sizes={} }) {
     }
     return data;
   }, data);
-}
 
+  return { value };
+}
 
 module.exports = {
   checkValidity,
