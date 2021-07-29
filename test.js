@@ -99,6 +99,42 @@ test("table", ({ eq }) => {
   });
 });
 
+test("select all reds then all greens then all blues then all alphas in one flat array", ({ eq }) => {
+  // assuming a 2x2 rgba image
+  const data = [
+    // reds
+    0, 1,
+    2, 3,
+
+    // greens
+    4, 5,
+    6, 7,
+
+    // blues
+    8, 9,
+    10, 11,
+
+    // alphas
+    12, 13,
+    14, 15
+  ];
+
+  const layout = "[band,(row,column)]";
+  // bottom left blue
+  const point = {
+    band: 2, // blue
+    row: 1, // second row
+    column: 0 // first column
+  }
+  const value = select({
+    data,
+    debugLevel: 3,
+    layout,
+    point
+  });
+  eq(value, 10);
+});
+
 test("imagedata", ({ eq }) => {
   // 2 * 2 image with consistent band values
   // all reds are 0, all greens are 1, all blues are 3, and all alphas are 3
@@ -143,28 +179,31 @@ test("geotiff", ({ eq }) => {
 
 test("select on ImageData", ({ eq }) => {
   // 2x2 image where values consistent per band
+  // all the red values are zero
+  // all the green values are 1
   const data = [
-    0, 1, 2, 3, 0, 1, 2, 3,
-    0, 1, 2, 3, 0, 1, 2, 3
+    0, 10, 20, 30,   1, 11, 21, 31,
+    2, 12, 22, 32,   3, 13, 23, 33
   ];
-  const layout = "[band,row,column]";
+  const layout = "[row,column,band]";
 
   // green bottom left
   const point = {
     band: 1, // green as it's the second band after red
     row: 1, // second row
     column: 0, // first column
-  }
+  };
 
   const value = select({
     data,
     layout,
     point,
     sizes: {
-      column: 2,
-      row: 2
+      band: 4,
+      column: 2
     }
   });
+  eq(value, 12);
 });
 
 test("select on [band][row,column]", ({ eq }) => {
@@ -177,7 +216,7 @@ test("select on [band][row,column]", ({ eq }) => {
   const sizes = { column: 2 };
   const point = { band: 2, row: 1, column: 1 };
   // offset =  row * ncols + column
-  const value = select({ data, debugLevel: 3, layout, point, sizes });
+  const value = select({ data, debugLevel: 0, layout, point, sizes });
   eq(value, 235);
 });
 

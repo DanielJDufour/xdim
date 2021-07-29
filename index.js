@@ -102,7 +102,13 @@ function select ({ data, debugLevel=0, layout, point, sizes={} }) {
       for (let i = parts.length - 1; i >= 0; i--) {
         const part = parts[i];
         // console.log({part});
-        if (part.type === "Vector") {
+        if (part.type === "Matrix") {
+          // need to make this function recursive...
+          // also probably need to make a distinction between recursive inteleaving
+          // and actually hard array boundaries
+          // shouldn't be calling them both Matrix
+          // maybe MultiSequence or Sequence??
+        } else if (part.type === "Vector") {
           // console.log({multiplier});
           const { dim } = part;
           offset += multiplier * point[dim];
