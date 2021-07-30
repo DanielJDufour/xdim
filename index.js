@@ -111,14 +111,100 @@ function select({ data, debugLevel = 0, layout, point, sizes = {} }) {
   return { value };
 }
 
+function forEachLeaf (arr, cb) {
+  // assume that each items in the array is a subarray
+  if (Array.isArray(arr[0])) {
+    arr.map(subarray => forEachLeaf(subarray, cb));
+  } else {
+    cb(arr);
+  }
+}
+
+// // add dimension to an array until the limit reaches zero
+function addDims({ arr, fill=undefined, lens }) {
+  // no new dimensions to add
+  if (lens.length === 0) return arr;
+
+  const len = lens.shift();
+  if (lens.length === 0) {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = new Array(len).fill(fill);
+    }
+  } else {
+    for (let i = 0; i < arr.length; i++) {
+      const sub = new Array(len).fill(fill);
+      arr[i] = sub;
+      addDims({ arr: sub, lens });
+    }
+  }
+  return arr;
+}
+
+function createMatrix({ fill = undefined, shape }) {
+  const len = shape.shift();
+  const arr = new Array(len).fill(fill);
+  return addDims({ arr, fill, lens: shape });
+}
+
+/*
+  Generates an in-memory data structure to hold the data
+*/
+function prep({ debugLevel=0, layout, sizes }) {
+  if (typeof layout === "string") layout = parse(layout);
+  if (debugLevel >= 2) console.log("layout:", layout);
+
+
+  let matrix;
+  layout.dims.forEach((it, i) => {
+    console.log("it:", it);
+
+    if (it.type === "Vector") {
+      // add arrays to deepest values
+      const length = sizes[it.dim];
+      console.log("length:", length);
+      if (i === 0) {
+        matrix = new Array(length);
+      } else {
+        forEachLeaf(matrix, arr => {
+          console.log("pushing to", arr);
+          arr.push(new Array(length));
+        });  
+      }
+    } else if (it.type === "Matrix") {
+      const length = it.parts.reduce((total, pt) => total * sizes[pt.dim], 1);
+      if (i === 0) {
+        matrix = new Array(length);
+      } else {
+        console.log("length:", length);
+        forEachLeaf(matrix, arr => {
+          console.log("pushing");
+          arr.push(new Array(length));
+        });  
+      }
+    }
+  });
+
+  return { matrix };
+}
+
+function transform({ data, from, to, sizes }) {
+  if (typeof from === "string") from = parse(from);
+  if (typeof to === "string") to = parse(to);
+
+  const result = prep({ layout: to });
+}
+
 module.exports = {
   checkValidity,
+  createMatrix,
   matchSequences,
   parse,
   parseDimensions,
   parseSequences,
   parseVectors,
+  prep,
   removeBraces,
   removeParentheses,
-  select
+  select,
+  transform
 };
