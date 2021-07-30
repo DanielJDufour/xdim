@@ -7,7 +7,7 @@ test("prep ImageData.data", ({ eq }) => {
   const sizes = {
     band: 4,
     column: 1024,
-    row: 768,
+    row: 768
   };
   const result = prep({ debugLevel, layout, sizes });
   eq(result.shape, [4 * 1024 * 768]);
@@ -20,12 +20,15 @@ test("prep band * table", ({ eq }) => {
   const sizes = {
     band: 4,
     column: 1024,
-    row: 768,
+    row: 768
   };
   const result = prep({ debugLevel, layout, sizes });
   eq(result.matrix.length, 4);
   eq(result.shape, [4, 1024 * 768]);
-  eq(result.matrix.every(row => row.length === 1024 * 768), true);
+  eq(
+    result.matrix.every(row => row.length === 1024 * 768),
+    true
+  );
 });
 
 test("prep: 3D", ({ eq }) => {
@@ -34,7 +37,7 @@ test("prep: 3D", ({ eq }) => {
   const sizes = {
     band: 4,
     column: 1024,
-    row: 768,
+    row: 768
   };
   const result = prep({ debugLevel, layout, sizes });
   eq(result.shape, [4, 768, 1024]);

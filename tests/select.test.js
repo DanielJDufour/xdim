@@ -51,6 +51,8 @@ test("select all reds then all greens then all blues then all alphas in one flat
     sizes
   });
   eq(result.value, 10);
+  eq(result.index, 10);
+  eq(Array.isArray(result.parent), true);
 });
 
 test("select on ImageData", ({ eq }) => {

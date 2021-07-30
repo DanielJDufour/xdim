@@ -10,6 +10,12 @@ test("create flat matrix / vector", ({ eq }) => {
 test("create table matrix", ({ eq }) => {
   const matrix = createMatrix({ fill: 8, shape: [20, 80] });
   eq(matrix.length, 20);
-  eq(matrix.every(it => it.length === 80), true);
-  eq(matrix.every(sub => sub.every(it => it === 8)), true);
+  eq(
+    matrix.every(it => it.length === 80),
+    true
+  );
+  eq(
+    matrix.every(sub => sub.every(it => it === 8)),
+    true
+  );
 });

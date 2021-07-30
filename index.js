@@ -63,6 +63,11 @@ function parse(str) {
   };
 }
 
+function update({ data, debugLevel = 0, layout, point, sizes = {}, value }) {
+  const { index, parent } = select({ data, debugLevel, layout, point, sizes });
+  parent[index] = value;
+}
+
 function select({ data, debugLevel = 0, layout, point, sizes = {} }) {
   if (debugLevel >= 1) console.log("starting select with", { data, debugLevel, layout, point });
 
@@ -72,12 +77,17 @@ function select({ data, debugLevel = 0, layout, point, sizes = {} }) {
 
   const dims = Object.keys(point);
 
+  let parent;
+  let index;
+
   // dims are arrays
   // let obj = data;
-  const value = layout.dims.reduce((data, arr) => {
+  const value = layout.dims.reduce((data, arr, idim) => {
     if (debugLevel >= 2) console.log("arr:", arr);
     if (arr.type === "Vector") {
       const i = point[arr.dim];
+      parent = data;
+      index = i;
       data = data[i];
     } else if (arr.type === "Matrix") {
       const { parts } = arr;
@@ -103,16 +113,19 @@ function select({ data, debugLevel = 0, layout, point, sizes = {} }) {
           }
         }
       }
+      parent = data;
+      index = offset;
       data = data[offset];
     }
+
     return data;
   }, data);
 
-  return { value };
+  return { index, value, parent };
 }
 
 // // add dimension to an array until the limit reaches zero
-function addDims({ arr, fill=undefined, lens }) {
+function addDims({ arr, fill = undefined, lens }) {
   // no new dimensions to add
   if (lens.length === 0) return arr;
 
@@ -140,7 +153,7 @@ function createMatrix({ fill = undefined, shape }) {
 /*
   Generates an in-memory data structure to hold the data
 */
-function prep({ debugLevel=0, layout, sizes }) {
+function prep({ debugLevel = 0, layout, sizes }) {
   if (typeof layout === "string") layout = parse(layout);
   if (debugLevel >= 2) console.log("layout:", layout);
 
@@ -158,11 +171,44 @@ function prep({ debugLevel=0, layout, sizes }) {
   return { matrix, shape };
 }
 
-function transform({ data, from, to, sizes }) {
+function transform({ data, debugLevel = 0, from, to, sizes }) {
   if (typeof from === "string") from = parse(from);
   if (typeof to === "string") to = parse(to);
 
-  const result = prep({ layout: to });
+  const { matrix } = prep({ layout: to, sizes });
+
+  let points = [{}];
+  for (let dim in sizes) {
+    const len = sizes[dim];
+    const newPoints = [];
+    for (let i = 0; i < len; i++) {
+      points.forEach(pt => {
+        newPoints.push({ [dim]: i, ...pt });
+      });
+    }
+    points = newPoints;
+  }
+
+  points.forEach(point => {
+    const { value } = select({
+      data,
+      layout: from,
+      point,
+      sizes
+    });
+
+    // insert into new frame
+    update({
+      data: matrix,
+      debugLevel: debugLevel - 1,
+      layout: to,
+      point,
+      sizes,
+      value
+    });
+  });
+
+  return { matrix };
 }
 
 module.exports = {
