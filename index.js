@@ -81,7 +81,6 @@ function select({ data, debugLevel = 0, layout, point, sizes = {} }) {
   let index;
 
   // dims are arrays
-  // let obj = data;
   const value = layout.dims.reduce((data, arr, idim) => {
     if (debugLevel >= 2) console.log("arr:", arr);
     if (arr.type === "Vector") {
@@ -124,7 +123,7 @@ function select({ data, debugLevel = 0, layout, point, sizes = {} }) {
   return { index, value, parent };
 }
 
-// // add dimension to an array until the limit reaches zero
+// add dimension to an array until the limit reaches zero
 function addDims({ arr, fill = undefined, lens }) {
   // no new dimensions to add
   if (lens.length === 0) return arr;

@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Functions for Working with Multi-Dimensional Data",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write *.js */*.js",
     "test": "for f in tests/*.js; do node $f; done"
@@ -33,8 +36,5 @@
   "homepage": "https://github.com/DanielJDufour/multidimensional-functions#readme",
   "devDependencies": {
     "flug": "^2.0.0"
-  },
-  "dependencies": {
-    "advarr": "^0.4.0"
   }
 }
