@@ -6,7 +6,7 @@
 > Functions for Working with Multi-Dimensional Data
 
 # motivation
-I work a lot with satellite imagery.  In theory, most satellite imagery has three dimensions: (1) band, like red, green, and blue; (2) row, and (3) column.  However, for practical reasons, this data is often structured in a flat array, like [ImageData.data](https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data) or a two-dimensional array where each subarray holds all the values for a specific band in [row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order).  This library was created for two main purposes: (1) to provide a unified interface for querying this data regardless of its practical structure and (2) converting this data from different structural layouts.
+I work a lot with satellite imagery.  In theory, most satellite imagery has three dimensions: (1) band, like red, green, and blue; (2) row, and (3) column.  However, for practical reasons, this data is often structured in a flat array, like [ImageData.data](https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data) or a two-dimensional array where each subarray holds all the values for a specific band in [row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order).  This library was created for two main purposes: (1) to provide a unified interface for querying this data regardless of its practical structure and (2) converting this data between different structural layouts.
 
 # install
 ```bash
@@ -41,7 +41,7 @@ const result = select({
 ```
 
 ## layout transformations
-If your data is one dimensional layout, you can transform to another using the transform function.
+If your data is a one dimensional array, you can transform to another using the transform function.
 In the example below we transform from a flat array of [ImageData.data](https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data) to a truly 3-dimensional array of arrays of arrays representing bands, then rows, then columns.
 
 ```javascript
