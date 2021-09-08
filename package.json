@@ -1,5 +1,5 @@
 {
-  "name": "multidimensional-functions",
+  "name": "xdim",
   "version": "0.0.0",
   "description": "Functions for Working with Multi-Dimensional Data",
   "main": "index.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DanielJDufour/multidimensional-functions.git"
+    "url": "git+https://github.com/DanielJDufour/xdim.git"
   },
   "keywords": [
     "array",
@@ -31,9 +31,9 @@
   "author": "Daniel J. Dufour",
   "license": "CC0-1.0",
   "bugs": {
-    "url": "https://github.com/DanielJDufour/multidimensional-functions/issues"
+    "url": "https://github.com/DanielJDufour/xdim/issues"
   },
-  "homepage": "https://github.com/DanielJDufour/multidimensional-functions#readme",
+  "homepage": "https://github.com/DanielJDufour/xdim#readme",
   "devDependencies": {
     "flug": "^2.0.0"
   }
