@@ -130,7 +130,7 @@ result is an object with an empty matrix and shape
   ]
 ```
 
-## inserting or updating values
+## inserting or updating a value
 If you have a multi-dimensional data structure and want to change or add a value, use `update`.
 ```js
 import { update } from 'xdim';
