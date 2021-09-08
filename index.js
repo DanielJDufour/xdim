@@ -152,7 +152,7 @@ function createMatrix({ fill = undefined, shape }) {
 /*
   Generates an in-memory data structure to hold the data
 */
-function prep({ debugLevel = 0, layout, sizes }) {
+function prep({ debugLevel = 0, fill = undefined, layout, sizes }) {
   if (typeof layout === "string") layout = parse(layout);
   if (debugLevel >= 2) console.log("layout:", layout);
 
@@ -165,7 +165,7 @@ function prep({ debugLevel = 0, layout, sizes }) {
   });
   if (debugLevel >= 2) console.log("shape:", shape);
 
-  const matrix = createMatrix({ fill: undefined, shape });
+  const matrix = createMatrix({ fill, shape });
 
   return { matrix, shape };
 }
@@ -222,5 +222,6 @@ module.exports = {
   removeBraces,
   removeParentheses,
   select,
-  transform
+  transform,
+  update
 };
