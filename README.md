@@ -90,3 +90,41 @@ const result = transform({
   ]
 }
 */
+```
+
+## constructing empty data structure
+If you just want to create the outline or skeleton of your structure without filling it in with data, you can call the prep function.
+```js
+import { prep } from 'xdim';
+
+const result = prep({
+  debugLevel: 0, // set to 1 or higher for increased logging
+  layout: "[band][row][column]",
+  sizes: {
+    band: 4,
+    column: 1024,
+    row: 768
+  }
+});
+```
+result is an object with an empty matrix and shape
+```
+{
+  shape: [4, 768, 1024], // describes the actual length of each array
+  matrix: [
+    // first band
+    [
+      [undefined, undefined, ... ], // band's first row of columns with length being the number of columns
+      [undefined, undefined, ... ], // band's second row
+      .
+      .
+      .
+    ],
+    
+    // second band
+    [
+      [undefined, undefined, ... ], // band's first row of columns with length being the number of columns
+      [undefined, undefined, ... ], // band's second row
+    ]
+  ]
+```
