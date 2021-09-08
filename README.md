@@ -99,6 +99,7 @@ import { prep } from 'xdim';
 
 const result = prep({
   debugLevel: 0, // set to 1 or higher for increased logging
+  fill: undefined, // the default fill value, could be set to zero, -99 or anything you want
   layout: "[band][row][column]",
   sizes: {
     band: 4,
