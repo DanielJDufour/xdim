@@ -165,5 +165,5 @@ update({
   // the value to insert at the specified point
   // it doesn't have to be a number
   value: 128 
-})
+});
 ```
