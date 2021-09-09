@@ -1,3 +1,5 @@
+const layoutCache = {};
+
 function parseDimensions(str) {
   const dims = {};
   const re = /[A-Za-z]+/g;
@@ -53,26 +55,34 @@ function checkValidity(str) {
   }
 }
 
-function parse(str) {
+function parse(str, { useLayoutCache = true } = { useLayoutCache: true }) {
+  if (useLayoutCache && str in layoutCache) return layoutCache[str];
+
   checkValidity(str);
 
   const vectors = parseVectors(str);
-  return {
+  const result = {
     type: "Layout",
     dims: vectors.map(parseSequences)
   };
+
+  if (useLayoutCache) layoutCache[str] = result;
+
+  return result;
 }
 
-function update({ data, debugLevel = 0, layout, point, sizes = {}, value }) {
-  const { index, parent } = select({ data, debugLevel, layout, point, sizes });
+function update({ useLayoutCache = true, data, debugLevel = 0, layout, point, sizes = {}, value }) {
+  const { index, parent } = select({ useLayoutCache, data, debugLevel, layout, point, sizes });
   parent[index] = value;
 }
 
-function select({ data, debugLevel = 0, layout, point, sizes = {} }) {
+function select({ useLayoutCache = true, data, debugLevel = 0, layout, point, sizes = {} }) {
   if (debugLevel >= 1) console.log("starting select with", { data, debugLevel, layout, point });
 
   // converts layout expression to a Layout object
-  if (typeof layout === "string") layout = parse(layout);
+  if (typeof layout === "string") {
+    layout = parse(layout, { useLayoutCache });
+  }
   if (debugLevel >= 2) console.log("layout object is:", layout);
 
   const dims = Object.keys(point);
@@ -152,8 +162,8 @@ function createMatrix({ fill = undefined, shape }) {
 /*
   Generates an in-memory data structure to hold the data
 */
-function prep({ debugLevel = 0, fill = undefined, layout, sizes }) {
-  if (typeof layout === "string") layout = parse(layout);
+function prep({ debugLevel = 0, fill = undefined, layout, useLayoutCache = true, sizes }) {
+  if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
   if (debugLevel >= 2) console.log("layout:", layout);
 
   const shape = layout.dims.map(it => {
@@ -170,9 +180,9 @@ function prep({ debugLevel = 0, fill = undefined, layout, sizes }) {
   return { matrix, shape };
 }
 
-function transform({ data, debugLevel = 0, from, to, sizes }) {
-  if (typeof from === "string") from = parse(from);
-  if (typeof to === "string") to = parse(to);
+function transform({ data, debugLevel = 0, from, to, sizes, useLayoutCache = true }) {
+  if (typeof from === "string") from = parse(from, { useLayoutCache });
+  if (typeof to === "string") to = parse(to, { useLayoutCache });
 
   const { matrix } = prep({ layout: to, sizes });
 
