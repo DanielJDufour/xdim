@@ -129,3 +129,41 @@ result is an object with an empty matrix and shape
     ]
   ]
 ```
+
+## inserting or updating a value
+If you have a multi-dimensional data structure and want to change or add a value, use `update`.
+```js
+import { update } from 'xdim';
+
+// an image in RGBA Image Data Format
+const data = [128, 31, 382, 255, 48, 38, 58, 255, ...];
+
+update({
+  // the structure that we will be modifying with a new value
+  data,
+ 
+  // controls logging for debugging purposes
+  // set to 1 or higher for increased logging
+  debugLevel: 0,
+  
+  // layout describing one array in major order from row to column to band
+  layout: "[row,column,band]",
+
+  // a point in multi-dimensional space
+  point: {
+    band: 2, // third-band or blue
+    row: 4, // the 5th row
+    column: 8, // the 9th column
+  },
+ 
+  sizes: {
+    band: 4, // the 4 bands: red, green, blue and alpha
+    row: 768, // the number of rows or height of the image
+    column: 1024, // the number of columns or width of the image
+  },
+ 
+  // the value to insert at the specified point
+  // it doesn't have to be a number
+  value: 128 
+});
+```
