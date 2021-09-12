@@ -1,10 +1,10 @@
 {
   "name": "xdim",
   "version": "0.0.0",
-  "description": "Functions for Working with Multi-Dimensional Data",
-  "main": "index.js",
+  "description": "Multi-Dimensional Functions. Create, Query, and Transform Multi-Dimensional Data.",
+  "main": "xdim.js",
   "files": [
-    "index.js"
+    "xdim.js"
   ],
   "scripts": {
     "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write *.js */*.js",
