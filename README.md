@@ -16,6 +16,19 @@ npm install xdim
 # usage
 This library provides the following functions: [select](https://github.com/DanielJDufour/xdim#reading-a-data-point), [transform](https://github.com/DanielJDufour/xdim#layout-transformations), [prep](https://github.com/DanielJDufour/xdim#constructing-empty-data-structure), and [update](https://github.com/DanielJDufour/xdim#inserting-or-updating-a-value).
 
+# xdim layout format
+Most of the functions in this library require that you specify the layout of the data using xdim format.  The format is simple with just a few main pieces. `[` and `]` denote an actual array boundary where values for the next dimension are placed in a subarray.  `,` denotes an interleaving between dimensions in left-to-right major order.  You can just write the names of the dimensions directly into the layout format as long as they don't include spaces.
+
+For example, if you have data on a bunch of car models where each car has its own array.   
+The string `[model][brand,maker,county,start_year,end_year]` could describe the layout of the following data
+```js
+[
+  ["Fusion", "Ford", "United States", "2005", "2020"]
+  ["Versa", "Nissan", "Japan", "2006", "2021"]
+]
+```
+
+
 ## reading a data point
 ```javascript
 import { select } from 'xdim';
