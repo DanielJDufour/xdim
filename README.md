@@ -143,7 +143,9 @@ If you just want to create the outline or skeleton of your structure without fil
 import { prepareData } from 'xdim';
 
 const result = prepareData({
-  fill: -99, // the default fill value is undefind, but it could be set to zero, null, -99, an object, or really anything you want
+  // the default fill value is undefined, but you can set it to zero, null, -99, an object, or really anything you want
+  // in this example, the default fill value is the number -99
+  fill: -99, 
   layout: "[band][row][column]",
   sizes: {
     band: 4,
