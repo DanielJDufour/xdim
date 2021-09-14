@@ -40,9 +40,12 @@ The layout could be described as `"[row,column,band]"`.
 This library provides the following functions: [select](#select), [clip](#clip), [transform](#transform), [prepareData](#prepareData), and [update](#update).
 
 ## select
+Select is used to get the value at a given multi-dimensional point.  The point is an object where each key is the name of a dimension with an index number.  Index numbers start at zero and increase until we reach the end of the length in the dimension.
+
 ```javascript
 import { select } from 'xdim';
 
+// satellite imagery data broken down by band
 const data = [
   [0, 123, 123, 162, ...], // red band
   [213, 41, 62, 124, ...], // green band
@@ -51,18 +54,36 @@ const data = [
 
 const result = select({
   data,
+
+  // each band is a separate array
+  // the values in a band are in row-major order
   layout: "[band][row,column]",
+  
   sizes: {
     band: 3, // image has 3 bands (red, green, and blue)
     column: 100 // image is 100 pixels wide
   },
+ 
   point: {
     band: 2, // 3rd band (blue), where band index starts at zero
     row: 74, // 73rd row from the top
     column: 63 // 62nd column from the left
   }
 });
-// result is { value: 62 }
+result is { value: 62 }
+```
+result is an object
+```js
+{
+  // the actual value found in the array
+  value: 62,
+
+  // the index in the array where the value is found
+  index: 7463,
+  
+  // a reference to the same array in the provided data
+  parent: [84, 52, 124, 235, ... 62, ...]
+}
 ```
 
 ## transform
