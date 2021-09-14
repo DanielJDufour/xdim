@@ -1,7 +1,3 @@
-⚠️ This library is highly experimental.  Please test before using in production.
-
----
-
 # xdim
 > Multi-Dimensional Functions
 
@@ -13,25 +9,43 @@ I work a lot with satellite imagery.  In theory, most satellite imagery has thre
 npm install xdim
 ```
 
-# the xdim layout format
-Most of the functions in this library require that you specify the layout of the data using "xdim layout format" or "xdim format" for short.  The format is simple with just a few main pieces. `[` and `]` denote an actual array boundary where values for the next dimension are placed in a subarray.  A comma `,` denotes an interleaving between dimensions in left-to-right major order.  You can just write the names of the dimensions directly into the layout format as long as they don't include spaces.
+# xdim layout syntax
+Most of the functions in this library require that you specify the layout of the data using <b>"xdim layout syntax"</b> or <b>"xdim syntax"</b> for short.  The format is simple with just a few main pieces:
+1) The straight brackets `[` and `]` indicates an actual array or subarrays.
+2) The comma `,` appears between `[` and `]` and means dimensions are interleaved in left-to-right major order.
+3) Dimension names can be made of any letter A to Z, lowercased or uppercased, can include underscores, and don't include spaces.
 
-For example, if you have data on a bunch of car models where each car has its own array.   
-The string `[model][brand,maker,county,start_year,end_year]` could describe the layout of the following data
+### xdim layout syntax examples
+Here's a couple examples of the <b>"xdim layout syntax"</b>:
+
+#### example: cars
+You have an array of information about car models where the information is stored in subarrays:
 ```js
 [
   ["Fusion", "Ford", "United States", "2005", "2020"]
   ["Versa", "Nissan", "Japan", "2006", "2021"]
 ]
 ```
+The layout could be described as `"[model][brand,maker,county,start_year,end_year]"`
+  
+#### example: pixels
+You have [ImageData.data](https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data):
+```js
+[31, 9, 71, 255, 126, 42, 53, 255, 71, 74, 71, 255, ...]
+```
+The layout could be described as `"[row,column,band]"`.
+
 
 # usage
-This library provides the following functions: [select](https://github.com/DanielJDufour/xdim#reading-a-data-point), [transform](https://github.com/DanielJDufour/xdim#layout-transformations), [prep](https://github.com/DanielJDufour/xdim#constructing-empty-data-structure), and [update](https://github.com/DanielJDufour/xdim#inserting-or-updating-a-value).
+This library provides the following functions: [select](#select), [clip](#clip), [transform](#transform), [prepareData](#prepareData), and [update](#update).
 
-## reading a data point
+## select
+Select is used to get the value at a given multi-dimensional point.  The point is an object where each key is the name of a dimension with an index number.  Index numbers start at zero and increase until we reach the end of the length in the dimension.
+
 ```javascript
 import { select } from 'xdim';
 
+// satellite imagery data broken down by band
 const data = [
   [0, 123, 123, 162, ...], // red band
   [213, 41, 62, 124, ...], // green band
@@ -40,21 +54,38 @@ const data = [
 
 const result = select({
   data,
+
+  // each band is a separate array
+  // the values in a band are in row-major order
   layout: "[band][row,column]",
+  
   sizes: {
     band: 3, // image has 3 bands (red, green, and blue)
     column: 100 // image is 100 pixels wide
   },
+ 
   point: {
     band: 2, // 3rd band (blue), where band index starts at zero
     row: 74, // 73rd row from the top
     column: 63 // 62nd column from the left
   }
 });
-// result is { value: 62 }
+```
+result is an object
+```js
+{
+  // the actual value found in the array
+  value: 62,
+
+  // the index in the array where the value is found
+  index: 7463,
+  
+  // a reference to the same array in the provided data
+  parent: [84, 52, 124, 235, ... 62, ...]
+}
 ```
 
-## layout transformations
+## transform
 If your data is a one dimensional array, you can transform to another using the transform function.
 In the example below we transform from a flat array of [ImageData.data](https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data) to a truly 3-dimensional array of arrays of arrays representing bands, then rows, then columns.
 
@@ -66,22 +97,23 @@ const data = [0, 213, 84, 255, 123, 41, 52, 255, 123, 62, 124, 255, 162, 124, 23
 
 const result = transform({
   data,
-  from: "[row,column,band]", // starting layout where all in one row with row-major order and bands interleaved
-  to: "[band][row][column]", // destination layout where each dimension are represented by arrays and not interleaved in the same array
+  from: "[row,column,band]", // starting layout where all in one row with row-major order and interleaved bands
+  to: "[band][row][column]", // final layout where each dimension is represented by arrays or subarrays and there is no interleaving of numbers inside the arrays
   sizes: {
     band: 4, // red, green, blue and alpha
     row: 768,
     width: 1024
   }
 });
-
-/* result is 
+```
+result is an object
+```js
 {
   data: [
     // red band
     [
       [0, 123, 123, 162, ...] // first row of the red band
-      [212, ... ] // second row the red band
+      [212, 124, 127, 92, ... ] // second row of the red band
     ],
 
     // green band
@@ -103,17 +135,17 @@ const result = transform({
     ]
   ]
 }
-*/
 ```
 
-## constructing empty data structure
-If you just want to create the outline or skeleton of your structure without filling it in with data, you can call the prep function.
+## prepareData
+If you just want to create the outline or skeleton of your structure without filling it in with data, you can call the prepareData function.
 ```js
-import { prep } from 'xdim';
+import { prepareData } from 'xdim';
 
-const result = prep({
-  debugLevel: 0, // set to 1 or higher for increased logging
-  fill: undefined, // the default fill value, could be set to zero, -99 or anything you want
+const result = prepareData({
+  // the default fill value is undefined, but you can set it to zero, null, -99, an object, or really anything you want
+  // in this example, the default fill value is the number -99
+  fill: -99, 
   layout: "[band][row][column]",
   sizes: {
     band: 4,
@@ -129,8 +161,8 @@ result is an object with an empty matrix and shape
   matrix: [
     // first band
     [
-      [undefined, undefined, ... ], // band's first row of columns with length being the number of columns
-      [undefined, undefined, ... ], // band's second row
+      [-99, -99, ... ], // band's first row of columns with length being the number of columns
+      [-99, -99, ... ], // band's second row
       .
       .
       .
@@ -138,13 +170,13 @@ result is an object with an empty matrix and shape
     
     // second band
     [
-      [undefined, undefined, ... ], // band's first row of columns with length being the number of columns
-      [undefined, undefined, ... ], // band's second row
+      [-99, -99, ... ], // band's first row of columns with length being the number of columns
+      [-99, -99, ... ], // band's second row
     ]
   ]
 ```
 
-## inserting or updating a value
+## update
 If you have a multi-dimensional data structure and want to change or add a value, use `update`.
 ```js
 import { update } from 'xdim';
