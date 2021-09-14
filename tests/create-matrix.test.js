@@ -1,5 +1,5 @@
 const test = require("flug");
-const { createMatrix } = require("../index");
+const { createMatrix } = require("../xdim");
 
 test("create flat matrix / vector", ({ eq }) => {
   const matrix = createMatrix({ fill: 8, shape: [5] });

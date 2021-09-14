@@ -71,64 +71,122 @@ function parse(str, { useLayoutCache = true } = { useLayoutCache: true }) {
   return result;
 }
 
-function update({ useLayoutCache = true, data, debugLevel = 0, layout, point, sizes = {}, value }) {
-  const { index, parent } = select({ useLayoutCache, data, debugLevel, layout, point, sizes });
-  parent[index] = value;
+function update({ useLayoutCache = true, data, layout, point, sizes = {}, value }) {
+  if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
+
+  const { dims } = layout;
+  for (let idim = 0; idim < dims.length; idim++) {
+    const last = idim === dims.length - 1;
+    const arr = dims[idim];
+    let offset;
+    if (arr.type === "Vector") {
+      offset = point[arr.dim];
+    } else {
+      // arr.type assumed to be "Matrix"
+      const { parts } = arr;
+      offset = 0;
+      let multiplier = 1;
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const part = parts[i];
+        const { dim } = part;
+        offset += multiplier * point[dim];
+        if (i > 0) {
+          if (!(dim in sizes)) throw new Error(`you cannot calculate the location without knowing the size of the "${dim}" dimension.`);
+          multiplier *= sizes[dim];
+        }
+      }
+    }
+    if (last) {
+      data[offset] = value;
+    } else {
+      data = data[offset];
+    }
+  }
 }
 
-function select({ useLayoutCache = true, data, debugLevel = 0, layout, point, sizes = {} }) {
-  if (debugLevel >= 1) console.log("starting select with", { data, debugLevel, layout, point });
+// clip a hyperrectangle (a multi-dimensional rectangle)
+// returns an array of numbers
+function clip({ useLayoutCache = true, data, layout, rect, sizes = {} }) {
+  if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
 
-  // converts layout expression to a Layout object
+  let datas = [data];
+
+  layout.dims.forEach(arr => {
+    let new_datas = [];
+    datas.forEach(data => {
+      if (arr.type === "Vector") {
+        const { start, end } = rect[arr.dim];
+        new_datas = new_datas.concat(data.slice(start, end + 1));
+      } else {
+        // only 2 types so must be arr.type === "Matrix"
+        const { parts } = arr;
+        let offsets = [0];
+        let multiplier = 1;
+        for (let i = parts.length - 1; i >= 0; i--) {
+          const part = parts[i];
+          // assume part.type === "Vector"
+          const { dim } = part;
+          const { start, end } = rect[dim];
+          const new_offsets = [];
+          for (let n = start; n <= end; n++) {
+            offsets.forEach(offset => {
+              new_offsets.push(offset + multiplier * n);
+            });
+          }
+          offsets = new_offsets;
+          multiplier *= sizes[dim];
+        }
+        offsets.forEach(offset => {
+          new_datas.push(data[offset]);
+        });
+      }
+    });
+    datas = new_datas;
+  });
+
+  return { data: datas };
+}
+
+function select({ useLayoutCache = true, data, layout, point, sizes = {} }) {
+  // converts layout expression to a layout object
   if (typeof layout === "string") {
     layout = parse(layout, { useLayoutCache });
   }
-  if (debugLevel >= 2) console.log("layout object is:", layout);
-
-  const dims = Object.keys(point);
 
   let parent;
   let index;
-
+  let value = data;
   // dims are arrays
-  const value = layout.dims.reduce((data, arr, idim) => {
-    if (debugLevel >= 2) console.log("arr:", arr);
+  const { dims } = layout;
+  const len = dims.length;
+  for (let idim = 0; idim < len; idim++) {
+    const arr = dims[idim];
     if (arr.type === "Vector") {
       const i = point[arr.dim];
-      parent = data;
+      parent = value;
       index = i;
-      data = data[i];
-    } else if (arr.type === "Matrix") {
+      value = value[i];
+    } else {
+      // only 2 types so must be a Matrix
       const { parts } = arr;
       let offset = 0;
       let multiplier = 1;
       for (let i = parts.length - 1; i >= 0; i--) {
         const part = parts[i];
-        // console.log({part});
-        if (part.type === "Matrix") {
-          // need to make this function recursive...
-          // also probably need to make a distinction between recursive inteleaving
-          // and actually hard array boundaries
-          // shouldn't be calling them both Matrix
-          // maybe MultiSequence or Sequence??
-        } else if (part.type === "Vector") {
-          // console.log({multiplier});
+        if (part.type === "Vector") {
           const { dim } = part;
           offset += multiplier * point[dim];
-          // console.log({offset, sizes, dim});
           if (i > 0) {
             if (!(dim in sizes)) throw new Error(`you cannot calculate the location without knowing the size of the "${dim}" dimension.`);
             multiplier *= sizes[dim];
           }
         }
       }
-      parent = data;
+      parent = value;
       index = offset;
-      data = data[offset];
+      value = value[offset];
     }
-
-    return data;
-  }, data);
+  }
 
   return { index, value, parent };
 }
@@ -159,12 +217,9 @@ function createMatrix({ fill = undefined, shape }) {
   return addDims({ arr, fill, lens: shape.slice(1) });
 }
 
-/*
-  Generates an in-memory data structure to hold the data
-*/
-function prep({ debugLevel = 0, fill = undefined, layout, useLayoutCache = true, sizes }) {
+// generates an in-memory data structure to hold the data
+function prepareData({ fill = undefined, layout, useLayoutCache = true, sizes }) {
   if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
-  if (debugLevel >= 2) console.log("layout:", layout);
 
   const shape = layout.dims.map(it => {
     if (it.type === "Vector") {
@@ -173,18 +228,17 @@ function prep({ debugLevel = 0, fill = undefined, layout, useLayoutCache = true,
       return it.parts.reduce((total, pt) => total * sizes[pt.dim], 1);
     }
   });
-  if (debugLevel >= 2) console.log("shape:", shape);
 
   const matrix = createMatrix({ fill, shape });
 
   return { matrix, shape };
 }
 
-function transform({ data, debugLevel = 0, from, to, sizes, useLayoutCache = true }) {
+function transform({ data, from, to, sizes, useLayoutCache = true }) {
   if (typeof from === "string") from = parse(from, { useLayoutCache });
   if (typeof to === "string") to = parse(to, { useLayoutCache });
 
-  const { matrix } = prep({ layout: to, sizes });
+  const { matrix } = prepareData({ layout: to, sizes });
 
   let points = [{}];
   for (let dim in sizes) {
@@ -209,7 +263,6 @@ function transform({ data, debugLevel = 0, from, to, sizes, useLayoutCache = tru
     // insert into new frame
     update({
       data: matrix,
-      debugLevel: debugLevel - 1,
       layout: to,
       point,
       sizes,
@@ -228,10 +281,11 @@ module.exports = {
   parseDimensions,
   parseSequences,
   parseVectors,
-  prep,
+  prepareData,
   removeBraces,
   removeParentheses,
   select,
   transform,
-  update
+  update,
+  clip
 };

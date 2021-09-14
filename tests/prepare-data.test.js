@@ -1,7 +1,7 @@
 const test = require("flug");
-const { prep } = require("../index");
+const { prepareData } = require("../xdim");
 
-test("prep ImageData.data", ({ eq }) => {
+test("prepareData ImageData.data", ({ eq }) => {
   const debugLevel = 0;
   const layout = "[row,column,band]";
   const sizes = {
@@ -9,12 +9,12 @@ test("prep ImageData.data", ({ eq }) => {
     column: 1024,
     row: 768
   };
-  const result = prep({ debugLevel, layout, sizes });
+  const result = prepareData({ debugLevel, layout, sizes });
   eq(result.shape, [4 * 1024 * 768]);
   eq(result.matrix, new Array(4 * 1024 * 768).fill(undefined));
 });
 
-test("prep band * table", ({ eq }) => {
+test("prepareData band * table", ({ eq }) => {
   const debugLevel = 0;
   const layout = "[band][row,column]";
   const sizes = {
@@ -22,7 +22,7 @@ test("prep band * table", ({ eq }) => {
     column: 1024,
     row: 768
   };
-  const result = prep({ debugLevel, layout, sizes });
+  const result = prepareData({ debugLevel, layout, sizes });
   eq(result.matrix.length, 4);
   eq(result.shape, [4, 1024 * 768]);
   eq(
@@ -31,7 +31,7 @@ test("prep band * table", ({ eq }) => {
   );
 });
 
-test("prep: 3D", ({ eq }) => {
+test("prepareData: 3D", ({ eq }) => {
   const debugLevel = 0;
   const layout = "[band][row][column]";
   const sizes = {
@@ -39,7 +39,7 @@ test("prep: 3D", ({ eq }) => {
     column: 1024,
     row: 768
   };
-  const result = prep({ debugLevel, layout, sizes });
+  const result = prepareData({ debugLevel, layout, sizes });
   eq(result.shape, [4, 768, 1024]);
   eq(result.matrix.length, 4);
   eq(result.matrix[0].length, 768);

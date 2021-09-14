@@ -1,5 +1,5 @@
 const test = require("flug");
-const { update } = require("../index");
+const { update } = require("../xdim");
 
 test("simple updates", ({ eq }) => {
   // flat array of rgba values

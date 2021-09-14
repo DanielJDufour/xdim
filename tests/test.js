@@ -1,5 +1,5 @@
 const test = require("flug");
-const { matchSequences, parse, parseDimensions, parseSequences, parseVectors, removeBraces, removeParentheses } = require("../index");
+const { matchSequences, parse, parseDimensions, parseSequences, parseVectors, removeBraces, removeParentheses } = require("../xdim");
 
 test("parseDimensions", ({ eq }) => {
   eq(parseDimensions("[row][column]"), {

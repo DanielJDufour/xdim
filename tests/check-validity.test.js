@@ -1,5 +1,5 @@
 const test = require("flug");
-const { checkValidity } = require("../index");
+const { checkValidity } = require("../xdim");
 
 test("valid", ({ eq }) => {
   const valid = checkValidity("[band][row,column]");
