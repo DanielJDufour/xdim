@@ -13,9 +13,9 @@ test("inflating image data", ({ eq }) => {
       row: 2
     }
   });
-  eq(result.matrix.length, 4);
-  eq(result.matrix[0].length, 2);
-  eq(result.matrix[0][0].length, 2);
-  eq(result.matrix[0][0][0], 0);
-  eq(result.matrix[0][1][1], 3);
+  eq(result.data.length, 4);
+  eq(result.data[0].length, 2);
+  eq(result.data[0][0].length, 2);
+  eq(result.data[0][0][0], 0);
+  eq(result.data[0][1][1], 3);
 });

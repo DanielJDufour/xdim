@@ -77,7 +77,7 @@ const result = transform({
 
 /* result is 
 {
-  matrix: [
+  data: [
     // red band
     [
       [0, 123, 123, 162, ...] // first row of the red band

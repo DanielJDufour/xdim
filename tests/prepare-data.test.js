@@ -11,7 +11,7 @@ test("prepareData ImageData.data", ({ eq }) => {
   };
   const result = prepareData({ debugLevel, layout, sizes });
   eq(result.shape, [4 * 1024 * 768]);
-  eq(result.matrix, new Array(4 * 1024 * 768).fill(undefined));
+  eq(result.data, new Array(4 * 1024 * 768).fill(undefined));
 });
 
 test("prepareData band * table", ({ eq }) => {
@@ -23,10 +23,10 @@ test("prepareData band * table", ({ eq }) => {
     row: 768
   };
   const result = prepareData({ debugLevel, layout, sizes });
-  eq(result.matrix.length, 4);
+  eq(result.data.length, 4);
   eq(result.shape, [4, 1024 * 768]);
   eq(
-    result.matrix.every(row => row.length === 1024 * 768),
+    result.data.every(row => row.length === 1024 * 768),
     true
   );
 });
@@ -41,7 +41,7 @@ test("prepareData: 3D", ({ eq }) => {
   };
   const result = prepareData({ debugLevel, layout, sizes });
   eq(result.shape, [4, 768, 1024]);
-  eq(result.matrix.length, 4);
-  eq(result.matrix[0].length, 768);
-  eq(result.matrix[0][0].length, 1024);
+  eq(result.data.length, 4);
+  eq(result.data[0].length, 768);
+  eq(result.data[0][0].length, 1024);
 });
