@@ -154,11 +154,12 @@ const result = prepareData({
   }
 });
 ```
-result is an object with an empty matrix and shape
+Result is an object with an empty data object and shape array.  The data object holds the multi-dimensional array of arrays.
+The shape array is an array that describes the actual length of the arrays used to hold the data.  (It is the actual practical length and not the theoretical length of the dimensions).
 ```
 {
   shape: [4, 768, 1024], // describes the actual length of each array
-  matrix: [
+  data: [
     // first band
     [
       [-99, -99, ... ], // band's first row of columns with length being the number of columns
