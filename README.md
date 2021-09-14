@@ -97,22 +97,23 @@ const data = [0, 213, 84, 255, 123, 41, 52, 255, 123, 62, 124, 255, 162, 124, 23
 
 const result = transform({
   data,
-  from: "[row,column,band]", // starting layout where all in one row with row-major order and bands interleaved
-  to: "[band][row][column]", // destination layout where each dimension are represented by arrays and not interleaved in the same array
+  from: "[row,column,band]", // starting layout where all in one row with row-major order and interleaved bands
+  to: "[band][row][column]", // final layout where each dimension is represented by arrays or subarrays and there is no interleaving of numbers inside the arrays
   sizes: {
     band: 4, // red, green, blue and alpha
     row: 768,
     width: 1024
   }
 });
-
-/* result is 
+```
+result is an object
+```js
 {
   matrix: [
     // red band
     [
       [0, 123, 123, 162, ...] // first row of the red band
-      [212, ... ] // second row the red band
+      [212, 124, 127, 92, ... ] // second row of the red band
     ],
 
     // green band
@@ -134,17 +135,15 @@ const result = transform({
     ]
   ]
 }
-*/
 ```
 
 ## prepareData
-If you just want to create the outline or skeleton of your structure without filling it in with data, you can call the prep function.
+If you just want to create the outline or skeleton of your structure without filling it in with data, you can call the prepareData function.
 ```js
-import { prep } from 'xdim';
+import { prepareData } from 'xdim';
 
-const result = prep({
-  debugLevel: 0, // set to 1 or higher for increased logging
-  fill: undefined, // the default fill value, could be set to zero, -99 or anything you want
+const result = prepareData({
+  fill: -99, // the default fill value is undefind, but it could be set to zero, null, -99, an object, or really anything you want
   layout: "[band][row][column]",
   sizes: {
     band: 4,
@@ -160,8 +159,8 @@ result is an object with an empty matrix and shape
   matrix: [
     // first band
     [
-      [undefined, undefined, ... ], // band's first row of columns with length being the number of columns
-      [undefined, undefined, ... ], // band's second row
+      [-99, -99, ... ], // band's first row of columns with length being the number of columns
+      [-99, -99, ... ], // band's second row
       .
       .
       .
@@ -169,8 +168,8 @@ result is an object with an empty matrix and shape
     
     // second band
     [
-      [undefined, undefined, ... ], // band's first row of columns with length being the number of columns
-      [undefined, undefined, ... ], // band's second row
+      [-99, -99, ... ], // band's first row of columns with length being the number of columns
+      [-99, -99, ... ], // band's second row
     ]
   ]
 ```
