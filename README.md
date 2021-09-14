@@ -70,7 +70,6 @@ const result = select({
     column: 63 // 62nd column from the left
   }
 });
-result is { value: 62 }
 ```
 result is an object
 ```js
