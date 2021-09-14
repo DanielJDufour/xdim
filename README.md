@@ -37,9 +37,9 @@ The layout could be described as `"[row,column,band]"`.
 
 
 # usage
-This library provides the following functions: [select](https://github.com/DanielJDufour/xdim#reading-a-data-point), [transform](https://github.com/DanielJDufour/xdim#layout-transformations), [prep](https://github.com/DanielJDufour/xdim#constructing-empty-data-structure), and [update](https://github.com/DanielJDufour/xdim#inserting-or-updating-a-value).
+This library provides the following functions: [select](#select), [clip](#clip), [transform](#transform), [prepareData](#prepareData), and [update](#update).
 
-## reading a data point
+## select
 ```javascript
 import { select } from 'xdim';
 
@@ -65,7 +65,7 @@ const result = select({
 // result is { value: 62 }
 ```
 
-## layout transformations
+## transform
 If your data is a one dimensional array, you can transform to another using the transform function.
 In the example below we transform from a flat array of [ImageData.data](https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data) to a truly 3-dimensional array of arrays of arrays representing bands, then rows, then columns.
 
@@ -117,7 +117,7 @@ const result = transform({
 */
 ```
 
-## constructing empty data structure
+## prepareData
 If you just want to create the outline or skeleton of your structure without filling it in with data, you can call the prep function.
 ```js
 import { prep } from 'xdim';
@@ -155,7 +155,7 @@ result is an object with an empty matrix and shape
   ]
 ```
 
-## inserting or updating a value
+## update
 If you have a multi-dimensional data structure and want to change or add a value, use `update`.
 ```js
 import { update } from 'xdim';
