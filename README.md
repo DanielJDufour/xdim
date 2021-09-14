@@ -1,7 +1,3 @@
-⚠️ This library is highly experimental.  Please test before using in production.
-
----
-
 # xdim
 > Multi-Dimensional Functions
 
@@ -13,17 +9,32 @@ I work a lot with satellite imagery.  In theory, most satellite imagery has thre
 npm install xdim
 ```
 
-# the xdim layout format
-Most of the functions in this library require that you specify the layout of the data using "xdim layout format" or "xdim format" for short.  The format is simple with just a few main pieces. `[` and `]` denote an actual array boundary where values for the next dimension are placed in a subarray.  A comma `,` denotes an interleaving between dimensions in left-to-right major order.  You can just write the names of the dimensions directly into the layout format as long as they don't include spaces.
+# xdim layout syntax
+Most of the functions in this library require that you specify the layout of the data using <b>"xdim layout syntax"</b> or <b>"xdim syntax"</b> for short.  The format is simple with just a few main pieces:
+1) The straight brackets `[` and `]` indicates an actual array or subarrays.
+2) The comma `,` appears between `[` and `]` and means dimensions are interleaved in left-to-right major order.
+3) Dimension names can be made of any letter A to Z, lowercased or uppercased, can include underscores, and don't include spaces.
 
-For example, if you have data on a bunch of car models where each car has its own array.   
-The string `[model][brand,maker,county,start_year,end_year]` could describe the layout of the following data
+### xdim layout syntax examples
+Here's a couple examples of the <b>"xdim layout syntax"</b>:
+
+#### example: cars
+You have an array of information about car models where the information is stored in subarrays:
 ```js
 [
   ["Fusion", "Ford", "United States", "2005", "2020"]
   ["Versa", "Nissan", "Japan", "2006", "2021"]
 ]
 ```
+The layout could be described as `"[model][brand,maker,county,start_year,end_year]"`
+  
+#### example: pixels
+You have [ImageData.data](https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data):
+```js
+[31, 9, 71, 255, 126, 42, 53, 255, 71, 74, 71, 255, ...]
+```
+The layout could be described as `"[row,column,band]"`.
+
 
 # usage
 This library provides the following functions: [select](https://github.com/DanielJDufour/xdim#reading-a-data-point), [transform](https://github.com/DanielJDufour/xdim#layout-transformations), [prep](https://github.com/DanielJDufour/xdim#constructing-empty-data-structure), and [update](https://github.com/DanielJDufour/xdim#inserting-or-updating-a-value).
