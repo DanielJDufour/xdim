@@ -144,7 +144,7 @@ function clip({ useLayoutCache = true, data, layout, rect, sizes = {} }) {
     datas = new_datas;
   });
 
-  return { data: datas };
+  return { values: datas };
 }
 
 function select({ useLayoutCache = true, data, layout, point, sizes = {} }) {

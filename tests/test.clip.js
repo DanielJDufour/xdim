@@ -38,7 +38,7 @@ test("clip [band][row][column]", ({ eq }) => {
       column: { start: 0, end: 1 } // all columns
     }
   });
-  eq(result.data, [8, 9]);
+  eq(result.values, [8, 9]);
 });
 
 test("clip [band][row,column]", ({ eq }) => {
@@ -64,7 +64,7 @@ test("clip [band][row,column]", ({ eq }) => {
       column: { start: 0, end: 1 } // all columns
     }
   });
-  eq(result.data, [8, 9]);
+  eq(result.values, [8, 9]);
 });
 
 test("clip rgb image data", ({ eq }) => {
@@ -86,5 +86,5 @@ test("clip rgb image data", ({ eq }) => {
       column: { start: 0, end: 1 } // all columns
     }
   });
-  eq(result.data, [8, 9]);
+  eq(result.values, [8, 9]);
 });
