@@ -1,6 +1,6 @@
 {
   "name": "xdim",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Multi-Dimensional Functions. Create, Query, and Transform Multi-Dimensional Data.",
   "main": "xdim.js",
   "files": [
