@@ -85,6 +85,48 @@ result is an object
 }
 ```
 
+## clip
+The `clip` function is almost the same as [select](#select) except that it returns an array of numbers instead of just one.
+You also pass in a rect instead of a point.  The "rect" is a [hyperrectangle](https://en.wikipedia.org/wiki/Hyperrectangle) (i.e. multi-dimensional rectangle) defined by an object with dimension name keys and start and end to the clipping range.
+```javascript
+import { select } from 'xdim';
+
+// satellite imagery data broken down by band
+const data = [
+  [0, 123, 123, 162, ...], // red band
+  [213, 41, 62, 124, ...], // green band
+  [84, 52, 124, 235, ...] // blue band
+];
+
+const result = select({
+  data,
+
+  // each band is a separate array
+  // the values in a band are in row-major order
+  layout: "[band][row,column]",
+  
+  sizes: {
+    band: 3, // image has 3 bands (red, green, and blue)
+    column: 100 // image is 100 pixels wide
+  },
+ 
+  rect: {
+    band: 2, // 3rd band (blue), where band index starts at zero
+    row: { start: 55, end: 74 }, // from the 56th to the 75th row (counting from the top)
+    column: { start: 55, end: 63 } // from the 56th to the 64th column (counting from the left)
+  }
+});
+```
+result is an object
+```js
+{
+  // the actual values found within the clipping region
+  values: [64, 27, 19, 91, 62, ...]
+}
+```
+
+
+
 ## transform
 If your data is a one dimensional array, you can transform to another using the transform function.
 In the example below we transform from a flat array of [ImageData.data](https://developer.mozilla.org/en-US/docs/Web/API/ImageData/data) to a truly 3-dimensional array of arrays of arrays representing bands, then rows, then columns.
@@ -178,7 +220,7 @@ The shape array is an array that describes the actual length of the arrays used 
 ```
 
 ## update
-If you have a multi-dimensional data structure and want to change or add a value, use `update`.
+If you have a multi-dimensional data structure and want to change a value, use `update`.
 ```js
 import { update } from 'xdim';
 
@@ -189,16 +231,12 @@ update({
   // the structure that we will be modifying with a new value
   data,
  
-  // controls logging for debugging purposes
-  // set to 1 or higher for increased logging
-  debugLevel: 0,
-  
   // layout describing one array in major order from row to column to band
   layout: "[row,column,band]",
 
   // a point in multi-dimensional space
   point: {
-    band: 2, // third-band or blue
+    band: 2, // the 3rd band or blue
     row: 4, // the 5th row
     column: 8, // the 9th column
   },
