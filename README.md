@@ -252,3 +252,10 @@ update({
   value: 128 
 });
 ```
+
+# used by
+- [geowarp](https://github.com/danieljdufour/geowarp)
+- [georaster](https://github.com/geotiff/georaster)
+
+# support
+Post an issue at https://github.com/DanielJDufour/xdim/issues.
