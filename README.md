@@ -66,8 +66,8 @@ const result = select({
  
   point: {
     band: 2, // 3rd band (blue), where band index starts at zero
-    row: 74, // 73rd row from the top
-    column: 63 // 62nd column from the left
+    row: 74, // 75th row from the top
+    column: 63 // 64th column from the left
   }
 });
 ```
