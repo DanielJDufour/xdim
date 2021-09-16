@@ -104,9 +104,7 @@ function update({ useLayoutCache = true, data, layout, point, sizes = {}, value 
   }
 }
 
-// clip a hyperrectangle (a multi-dimensional rectangle)
-// returns an array of numbers
-function clip({ useLayoutCache = true, data, layout, rect, sizes = {} }) {
+function clip({ useLayoutCache = true, data, layout, rect, sizes = {}, flat = false }) {
   if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
 
   let datas = [data];
@@ -144,7 +142,34 @@ function clip({ useLayoutCache = true, data, layout, rect, sizes = {} }) {
     datas = new_datas;
   });
 
-  return { values: datas };
+  if (flat) {
+    return {
+      data: datas
+    };
+  }
+
+  // prepareResult
+  const out_sizes = Object.fromEntries(Object.entries(rect).map(([dim, { start, end }]) => [dim, end - start + 1]));
+
+  const { data: out_data } = prepareData({
+    layout,
+    sizes: out_sizes
+  });
+
+  const max_depth = layout.dims.length;
+
+  const step = (arr, depth) => {
+    if (depth === max_depth) {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = datas.shift();
+      }
+    } else {
+      arr.forEach(sub => step(sub, depth + 1));
+    }
+  };
+  step(out_data, 1);
+
+  return { data: out_data };
 }
 
 function select({ useLayoutCache = true, data, layout, point, sizes = {} }) {

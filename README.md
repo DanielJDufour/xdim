@@ -86,8 +86,7 @@ result is an object
 ```
 
 ## clip
-The `clip` function is almost the same as [select](#select) except that it returns an array of numbers instead of just one.
-You also pass in a rect instead of a point.  The "rect" is a [hyperrectangle](https://en.wikipedia.org/wiki/Hyperrectangle) (i.e. multi-dimensional rectangle) defined by an object with dimension name keys and start and end to the clipping range.
+The `clip` function is used to pull out a subsection of the data within a [hyperrectangle](https://en.wikipedia.org/wiki/Hyperrectangle) (i.e. multi-dimensional rectangle), which we call "rect".  The "rect" is defined by an object with dimension name keys and a numerical range.  The range is "inclusive", including the first and last numbers provided.
 ```javascript
 import { select } from 'xdim';
 
@@ -101,6 +100,11 @@ const data = [
 const result = select({
   data,
 
+  // if you don't care about the structure of the returned data
+  // or want to receive your results more quickly,
+  // you can set flat to true, and it will return a flat array
+  flat: false,
+
   // each band is a separate array
   // the values in a band are in row-major order
   layout: "[band][row,column]",
@@ -111,17 +115,23 @@ const result = select({
   },
  
   rect: {
-    band: 2, // 3rd band (blue), where band index starts at zero
-    row: { start: 55, end: 74 }, // from the 56th to the 75th row (counting from the top)
-    column: { start: 55, end: 63 } // from the 56th to the 64th column (counting from the left)
+    band: [2, 2], // 3rd band (blue), where band index starts at zero
+    row: [55, 74], // from the 56th to the 75th row (counting from the top)
+    column: [60, 62] // from the 61st to the 63rd column (counting from the left)
   }
 });
 ```
 result is an object
 ```js
 {
-  // the actual values found within the clipping region
-  values: [64, 27, 19, 91, 62, ...]
+  data: [
+    // only one band was selected, so we only have one sub-array
+    // because the original data combined all the rows in the same array
+    // the result has the same structure
+
+    // all the values in band 2 that fall within row 55 to row 74 and column 60 to 62
+    [64, 27, 19, 23, 45, 82 ... ]
+  ]
 }
 ```
 
