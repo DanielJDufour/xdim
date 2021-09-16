@@ -113,7 +113,7 @@ function clip({ useLayoutCache = true, data, layout, rect, sizes = {}, flat = fa
     let new_datas = [];
     datas.forEach(data => {
       if (arr.type === "Vector") {
-        const { start, end } = rect[arr.dim];
+        const [start, end] = rect[arr.dim];
         new_datas = new_datas.concat(data.slice(start, end + 1));
       } else {
         // only 2 types so must be arr.type === "Matrix"
@@ -124,7 +124,7 @@ function clip({ useLayoutCache = true, data, layout, rect, sizes = {}, flat = fa
           const part = parts[i];
           // assume part.type === "Vector"
           const { dim } = part;
-          const { start, end } = rect[dim];
+          const [start, end] = rect[dim];
           const new_offsets = [];
           for (let n = start; n <= end; n++) {
             offsets.forEach(offset => {
@@ -149,7 +149,7 @@ function clip({ useLayoutCache = true, data, layout, rect, sizes = {}, flat = fa
   }
 
   // prepareResult
-  const out_sizes = Object.fromEntries(Object.entries(rect).map(([dim, { start, end }]) => [dim, end - start + 1]));
+  const out_sizes = Object.fromEntries(Object.entries(rect).map(([dim, [start, end]]) => [dim, end - start + 1]));
 
   const { data: out_data } = prepareData({
     layout,

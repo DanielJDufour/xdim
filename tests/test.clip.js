@@ -33,9 +33,9 @@ test("clip [band][row][column]", ({ eq }) => {
 
     // first row of the third band
     rect: {
-      band: { start: 2, end: 2 },
-      row: { start: 0, end: 0 }, // first row
-      column: { start: 0, end: 1 } // all columns
+      band: [2, 2],
+      row: [0, 0], // first row
+      column: [0, 1] // all columns
     }
   });
   eq(result.data, [[[8, 9]]]);
@@ -59,9 +59,9 @@ test("clip [band][row,column]", ({ eq }) => {
 
     // first row of the third band
     rect: {
-      band: { start: 2, end: 2 },
-      row: { start: 0, end: 0 }, // first row
-      column: { start: 0, end: 1 } // all columns
+      band: [2, 2],
+      row: [0, 0], // first row
+      column: [0, 1] // all columns
     }
   });
   eq(result.data, [[8, 9]]);
@@ -81,9 +81,9 @@ test("clip rgb image data", ({ eq }) => {
 
     // first row of the third band
     rect: {
-      band: { start: 2, end: 2 },
-      row: { start: 0, end: 0 }, // first row
-      column: { start: 0, end: 1 } // all columns
+      band: [2, 2],
+      row: [0, 0], // first row
+      column: [0, 1] // all columns
     }
   });
   eq(result.data, [8, 9]);
@@ -122,9 +122,9 @@ test("clip [band][row][column] flat", ({ eq }) => {
 
     // first row of the third band
     rect: {
-      band: { start: 2, end: 2 },
-      row: { start: 0, end: 0 }, // first row
-      column: { start: 0, end: 1 } // all columns
+      band: [2, 2],
+      row: [0, 0], // first row
+      column: [0, 1] // all columns
     }
   });
   eq(result.data, [8, 9]);
