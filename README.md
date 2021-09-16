@@ -88,7 +88,7 @@ result is an object
 ## clip
 The `clip` function is used to pull out a subsection of the data within a [hyperrectangle](https://en.wikipedia.org/wiki/Hyperrectangle) (i.e. multi-dimensional rectangle), which we call "rect".  The "rect" is defined by an object with dimension name keys and a numerical range.  The range is "inclusive", including the first and last numbers provided.
 ```javascript
-import { select } from 'xdim';
+import { clip } from 'xdim';
 
 // satellite imagery data broken down by band
 const data = [
@@ -97,7 +97,7 @@ const data = [
   [84, 52, 124, 235, ...] // blue band
 ];
 
-const result = select({
+const result = clip({
   data,
 
   // if you don't care about the structure of the returned data
