@@ -37,7 +37,7 @@ The layout could be described as `"[row,column,band]"`.
 
 
 # usage
-This library provides the following functions: [select](#select), [prepareSelect](#prepareSelect), [clip](#clip), [transform](#transform), [prepareData](#prepareData), and [update](#update).  
+This library provides the following functions: [select](#select), [prepareSelect](#prepareSelect), [clip](#clip), [transform](#transform), [prepareData](#prepareData), [update](#update), and [prepareUpdate](#prepareUpdate).
 
 ## select
 Select is used to get the value at a given multi-dimensional point.  The point is an object where each key is the name of a dimension with an index number.  Index numbers start at zero and increase until we reach the end of the length in the dimension.
@@ -311,6 +311,44 @@ update({
     column: 1024, // the number of columns or width of the image
   },
  
+  // the value to insert at the specified point
+  // it doesn't have to be a number
+  value: 128 
+});
+```
+
+## prepareUpdate
+The function `prepareUpdate` is to [update](#update) as `prepareSelect` is to [select](#select).  It returns an optimized update function.
+```js
+import { prepareUpdate } from 'xdim';
+
+// an image in RGBA Image Data Format
+const data = [128, 31, 382, 255, 48, 38, 58, 255, ...];
+
+const update = prepareUpdate({
+  // the structure that we will be modifying with update calls
+  data,
+ 
+  // layout describing one array in major order from row to column to band
+  layout: "[row,column,band]",
+
+
+ 
+  sizes: {
+    band: 4, // the 4 bands: red, green, blue and alpha
+    row: 768, // the number of rows or height of the image
+    column: 1024, // the number of columns or width of the image
+  }
+});
+
+update({
+  // a point in multi-dimensional space
+  point: {
+    band: 2, // the 3rd band or blue
+    row: 4, // the 5th row
+    column: 8, // the 9th column
+  },
+  
   // the value to insert at the specified point
   // it doesn't have to be a number
   value: 128 
