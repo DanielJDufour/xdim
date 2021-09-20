@@ -318,7 +318,7 @@ update({
 ```
 
 ## prepareUpdate
-The function `prepareUpdate` is to [update](#update) as `prepareSelect` is to [select](#select).  It returns an optimized update function.
+The function `prepareUpdate` is to [update](#update) as [prepareSelect](#prepareSelect) is to [select](#select).  It returns an optimized update function.
 ```js
 import { prepareUpdate } from 'xdim';
 
