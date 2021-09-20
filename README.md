@@ -331,8 +331,6 @@ const update = prepareUpdate({
  
   // layout describing one array in major order from row to column to band
   layout: "[row,column,band]",
-
-
  
   sizes: {
     band: 4, // the 4 bands: red, green, blue and alpha
