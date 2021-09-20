@@ -88,6 +88,12 @@ result is an object
 ## prepareSelect
 The `prepareSelect` function is use to create a supercharged select function for some data.  There is some
 fixed cost to creating the function, so only use it if you think you will run several to many selects.
+
+
+:sparkles: So what magic makes the prepared select statements so fast?  We pre-generate
+[select functions](https://github.com/DanielJDufour/xdim/blob/main/src/funcs.js), so that JavaScript compilers
+can optimize the logical steps needed to lookup data.  We then just [bind](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind) the dimension names, sizes, and data to these "pre-compiled" functions.
+
 ```javascript
 import { prepareSelect } from 'xdim';
 
@@ -111,11 +117,12 @@ const select = prepareSelect({
   }
 });
 
-const result = select(
+const result = select({
   point: {
-  band: 2, // 3rd band (blue), where band index starts at zero
-  row: 74, // 75th row from the top
-  column: 63 // 64th column from the left
+    band: 2, // 3rd band (blue), where band index starts at zero
+    row: 74, // 75th row from the top
+    column: 63 // 64th column from the left
+  }
 });
 ```
 result is an object
