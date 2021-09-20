@@ -1,4 +1,5 @@
 const layoutCache = {};
+const funcs = require("./funcs.js");
 
 function parseDimensions(str) {
   const dims = {};
@@ -11,6 +12,12 @@ function parseDimensions(str) {
     };
   }
   return dims;
+}
+
+function normalizeLayoutString(str) {
+  const alphabet = "abcdefghijklmnopqrstuvwxyz";
+  let i = 0;
+  return str.replace(/[A-Za-z]+/g, () => alphabet[i++]);
 }
 
 const parseVectors = str => str.match(/\[[^\]]+\]/g);
@@ -61,9 +68,11 @@ function parse(str, { useLayoutCache = true } = { useLayoutCache: true }) {
   checkValidity(str);
 
   const vectors = parseVectors(str);
+  const dims = vectors.map(parseSequences);
   const result = {
     type: "Layout",
-    dims: vectors.map(parseSequences)
+    summary: dims.map(it => (it.type === "Matrix" ? it.parts.length : 1)),
+    dims
   };
 
   if (useLayoutCache) layoutCache[str] = result;
@@ -172,6 +181,84 @@ function clip({ useLayoutCache = true, data, layout, rect, sizes = {}, flat = fa
   return { data: out_data };
 }
 
+function getMultipliers({ useLayoutCache = true, layout, sizes }) {
+  if (typeof layout === "string") {
+    layout = parse(layout, { useLayoutCache });
+  }
+  const { dims } = layout;
+  const numDims = dims.length;
+  let multipliers = {};
+  for (let idim = 0; idim < numDims; idim++) {
+    const arr = dims[idim];
+    if (arr.type === "Vector") {
+      multipliers[arr.dim] = 1;
+    } else {
+      // arr.type assumed to be "Matrix"
+      const { parts } = arr;
+      let multiplier = 1;
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const { dim } = parts[i];
+        multipliers[dim] = multiplier;
+        multiplier *= sizes[parts[i].dim];
+      }
+    }
+  }
+  return multipliers;
+}
+
+function prepareSelect({ useLayoutCache = true, data, layout, sizes = {} }) {
+  // let layoutNormalized;
+  if (typeof layout === "string") {
+    // layoutNormalized = normalizeLayoutString(layout);
+    layout = parse(layout, { useLayoutCache });
+  }
+  const { dims } = layout;
+  const numDims = dims.length;
+  const multipliers = getMultipliers({ useLayoutCache, layout, sizes });
+  const end = numDims - 1;
+
+  const key = layout.summary.toString();
+  if (key in funcs) {
+    const _this = { data };
+    layout.dims.map((it, depth) => {
+      if (it.type === "Vector") {
+        _this[`d${depth}v0`] = it.dim;
+      } else if (it.type === "Matrix") {
+        it.parts.forEach((part, ipart) => {
+          _this[`d${depth}v${ipart}`] = part.dim;
+          _this[`m${depth}v${ipart}`] = multipliers[part.dim];
+        });
+      }
+    });
+
+    return funcs[key].bind(_this);
+  }
+
+  return ({ point }) => {
+    let currentData = data;
+    for (let idim = 0; idim < numDims; idim++) {
+      const last = idim === end;
+      const arr = dims[idim];
+      let offset;
+      if (arr.type === "Vector") {
+        offset = point[arr.dim];
+      } else {
+        // arr.type assumed to be "Matrix"
+        offset = arr.parts.reduce((acc, { dim }) => acc + multipliers[dim] * point[dim], 0);
+      }
+      if (last) {
+        return {
+          index: offset,
+          parent: currentData,
+          value: currentData[offset]
+        };
+      } else {
+        currentData = currentData[offset];
+      }
+    }
+  };
+}
+
 function select({ useLayoutCache = true, data, layout, point, sizes = {} }) {
   // converts layout expression to a layout object
   if (typeof layout === "string") {
@@ -246,11 +333,12 @@ function createMatrix({ fill = undefined, shape }) {
 function prepareData({ fill = undefined, layout, useLayoutCache = true, sizes }) {
   if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
 
+  // console.log("layout:", layout);
   const shape = layout.dims.map(it => {
     if (it.type === "Vector") {
       return sizes[it.dim];
     } else if (it.type === "Matrix") {
-      return it.parts.reduce((total, pt) => total * sizes[pt.dim], 1);
+      return it.parts.reduce((total, part) => total * sizes[part.dim], 1);
     }
   });
 
@@ -307,6 +395,7 @@ module.exports = {
   parseSequences,
   parseVectors,
   prepareData,
+  prepareSelect,
   removeBraces,
   removeParentheses,
   select,

@@ -1,5 +1,5 @@
 const test = require("flug");
-const { prepareData } = require("../xdim");
+const { prepareData } = require("../src/xdim");
 
 test("prepareData ImageData.data", ({ eq }) => {
   const debugLevel = 0;

@@ -2,13 +2,15 @@
   "name": "xdim",
   "version": "1.0.0-0",
   "description": "Multi-Dimensional Functions. Create, Query, and Transform Multi-Dimensional Data.",
-  "main": "xdim.js",
+  "main": "src/xdim.js",
   "files": [
-    "xdim.js"
+    "src/xdim.js",
+    "src/funcs.js"
   ],
   "scripts": {
-    "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write *.js */*.js",
-    "test": "for f in tests/*.js; do node $f; done"
+    "build": "node scripts/build.js",
+    "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write */*.js",
+    "test": "npm run build && for f in tests/*.js; do node $f; done"
   },
   "repository": {
     "type": "git",

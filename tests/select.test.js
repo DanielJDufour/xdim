@@ -1,5 +1,5 @@
 const test = require("flug");
-const { select } = require("../xdim");
+const { select } = require("../src/xdim");
 
 test("select all reds then all greens then all blues then all alphas in one flat array", ({ eq }) => {
   // assuming a 2x2 rgba image

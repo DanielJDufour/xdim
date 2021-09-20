@@ -1,5 +1,5 @@
 const test = require("flug");
-const { matchSequences, parse, parseDimensions, parseSequences, parseVectors, removeBraces, removeParentheses } = require("../xdim");
+const { matchSequences, parse, parseDimensions, parseSequences, parseVectors, removeBraces, removeParentheses } = require("../src/xdim");
 
 test("parseDimensions", ({ eq }) => {
   eq(parseDimensions("[row][column]"), {
@@ -77,6 +77,7 @@ test("table", ({ eq }) => {
   const layout = parse(syntax);
   eq(layout, {
     type: "Layout",
+    summary: [1, 1],
     dims: [
       { type: "Vector", dim: "row" },
       { type: "Vector", dim: "column" }
@@ -95,6 +96,7 @@ test("imagedata", ({ eq }) => {
   const layout = parse(syntax);
   eq(layout, {
     type: "Layout",
+    summary: [3],
     dims: [
       {
         type: "Matrix",
@@ -113,6 +115,7 @@ test("geotiff", ({ eq }) => {
   const layout = parse(str);
   eq(layout, {
     type: "Layout",
+    summary: [1, 2],
     dims: [
       { type: "Vector", dim: "band" },
       {
