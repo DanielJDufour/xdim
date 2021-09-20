@@ -1,5 +1,6 @@
 const layoutCache = {};
-const funcs = require("./funcs.js");
+const preparedSelectFunctions = require("./prepared-select-funcs.js");
+const preparedUpdateFunctions = require("./prepared-update-funcs.js");
 
 function parseDimensions(str) {
   const dims = {};
@@ -113,6 +114,53 @@ function update({ useLayoutCache = true, data, layout, point, sizes = {}, value 
   }
 }
 
+function prepareUpdate({ useLayoutCache = true, data, layout, sizes = {} }) {
+  if (typeof layout === "string") {
+    layout = parse(layout, { useLayoutCache });
+  }
+  const { dims } = layout;
+  const numDims = dims.length;
+  const multipliers = getMultipliers({ useLayoutCache, layout, sizes });
+  const end = numDims - 1;
+
+  const key = layout.summary.toString();
+  if (key in preparedUpdateFunctions) {
+    const _this = { data };
+    layout.dims.map((it, depth) => {
+      if (it.type === "Vector") {
+        _this[`d${depth}v0`] = it.dim;
+      } else if (it.type === "Matrix") {
+        it.parts.forEach((part, ipart) => {
+          _this[`d${depth}v${ipart}`] = part.dim;
+          _this[`m${depth}v${ipart}`] = multipliers[part.dim];
+        });
+      }
+    });
+
+    return preparedUpdateFunctions[key].bind(_this);
+  }
+
+  return ({ point, value }) => {
+    let currentData = data;
+    for (let idim = 0; idim < numDims; idim++) {
+      const last = idim === end;
+      const arr = dims[idim];
+      let offset;
+      if (arr.type === "Vector") {
+        offset = point[arr.dim];
+      } else {
+        // arr.type assumed to be "Matrix"
+        offset = arr.parts.reduce((acc, { dim }) => acc + multipliers[dim] * point[dim], 0);
+      }
+      if (last) {
+        currentData[offset] = value;
+      } else {
+        currentData = currentData[offset];
+      }
+    }
+  };
+}
+
 function clip({ useLayoutCache = true, data, layout, rect, sizes = {}, flat = false }) {
   if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
 
@@ -207,9 +255,7 @@ function getMultipliers({ useLayoutCache = true, layout, sizes }) {
 }
 
 function prepareSelect({ useLayoutCache = true, data, layout, sizes = {} }) {
-  // let layoutNormalized;
   if (typeof layout === "string") {
-    // layoutNormalized = normalizeLayoutString(layout);
     layout = parse(layout, { useLayoutCache });
   }
   const { dims } = layout;
@@ -218,7 +264,7 @@ function prepareSelect({ useLayoutCache = true, data, layout, sizes = {} }) {
   const end = numDims - 1;
 
   const key = layout.summary.toString();
-  if (key in funcs) {
+  if (key in preparedSelectFunctions) {
     const _this = { data };
     layout.dims.map((it, depth) => {
       if (it.type === "Vector") {
@@ -231,7 +277,7 @@ function prepareSelect({ useLayoutCache = true, data, layout, sizes = {} }) {
       }
     });
 
-    return funcs[key].bind(_this);
+    return preparedSelectFunctions[key].bind(_this);
   }
 
   return ({ point }) => {
@@ -396,6 +442,7 @@ module.exports = {
   parseVectors,
   prepareData,
   prepareSelect,
+  prepareUpdate,
   removeBraces,
   removeParentheses,
   select,

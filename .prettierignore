@@ -1,1 +1,2 @@
-src/funcs.js
+src/prepared-select-funcs.js
+src/prepared-update-funcs.js

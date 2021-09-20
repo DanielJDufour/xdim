@@ -1,5 +1,5 @@
 const test = require("flug");
-const { prepareData, prepareSelect, select } = require("../src/xdim");
+const { prepareData, prepareSelect, select, update, prepareUpdate } = require("../src/xdim");
 
 const sizes = { a: 4, b: 1e3, c: 1e3 };
 const layout = "[a][b][c]";
@@ -47,7 +47,7 @@ test("perf: select [band][row,column]", ({ eq }) => {
 });
 
 test("perf: prepareSelect [band][row,column]", ({ eq }) => {
-  console.time("perf: prepareSelect bound [band][row,column]");
+  console.time("perf: prepareSelect [band][row,column]");
   const select = prepareSelect({ data: im_data, layout: im_layout, sizes: im_sizes });
   for (let b = 0; b < im_sizes.band; b++) {
     for (let r = 0; r < im_sizes.row; r++) {
@@ -56,5 +56,30 @@ test("perf: prepareSelect [band][row,column]", ({ eq }) => {
       }
     }
   }
-  console.timeEnd("perf: prepareSelect bound [band][row,column]");
+  console.timeEnd("perf: prepareSelect [band][row,column]");
+});
+
+test("perf: update [band][row,column]", ({ eq }) => {
+  console.time("perf: update [band][row,column]");
+  for (let b = 0; b < im_sizes.band; b++) {
+    for (let r = 0; r < im_sizes.row; r++) {
+      for (let c = 0; c < im_sizes.column; c++) {
+        update({ data: im_data, layout: im_layout, point: { band: b, row: r, column: c }, sizes: im_sizes, value: 10 });
+      }
+    }
+  }
+  console.timeEnd("perf: update [band][row,column]");
+});
+
+test("perf: prepareUpdate [band][row,column]", ({ eq }) => {
+  console.time("perf: prepareUpdate [band][row,column]");
+  const update = prepareUpdate({ data: im_data, layout: im_layout, sizes: im_sizes });
+  for (let b = 0; b < im_sizes.band; b++) {
+    for (let r = 0; r < im_sizes.row; r++) {
+      for (let c = 0; c < im_sizes.column; c++) {
+        update({ point: { band: b, row: r, column: c }, value: 10 });
+      }
+    }
+  }
+  console.timeEnd("perf: prepareUpdate [band][row,column]");
 });

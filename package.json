@@ -5,7 +5,8 @@
   "main": "src/xdim.js",
   "files": [
     "src/xdim.js",
-    "src/funcs.js"
+    "src/prepared-select-funcs.js",
+    "src/prepared-update-funcs.js"
   ],
   "scripts": {
     "build": "node scripts/build.js",

@@ -1,4 +1,4 @@
-module.exports = function generateFunctions({ spacer }) {
+module.exports = function createSelectFunctions({ spacer }) {
   const funcs = {};
   for (let depth = 1; depth <= 5; depth++) {
     for (let ct = 1; ct <= 5; ct++) {
