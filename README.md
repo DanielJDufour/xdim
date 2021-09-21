@@ -91,7 +91,7 @@ fixed cost to creating the function, so only use it if you think you will run se
 
 
 :sparkles: So what magic makes the prepared select statements so fast?  We pre-generate
-[select functions](https://github.com/DanielJDufour/xdim/blob/main/src/funcs.js), so that JavaScript compilers
+[select functions](https://github.com/DanielJDufour/xdim/blob/main/src/prepared-select-funcs.js), so that JavaScript compilers
 can optimize the logical steps needed to lookup data.  We then just [bind](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind) the dimension names, sizes, and data to these "pre-compiled" functions.
 
 ```javascript
