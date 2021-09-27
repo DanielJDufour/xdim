@@ -393,11 +393,11 @@ function prepareData({ fill = undefined, layout, useLayoutCache = true, sizes })
   return { data, shape };
 }
 
-function transform({ data, from, to, sizes, useLayoutCache = true }) {
+function transform({ data, fill, from, to, sizes, useLayoutCache = true }) {
   if (typeof from === "string") from = parse(from, { useLayoutCache });
   if (typeof to === "string") to = parse(to, { useLayoutCache });
 
-  const { data: out_data } = prepareData({ layout: to, sizes });
+  const { data: out_data } = prepareData({ fill, layout: to, sizes });
 
   let points = [{}];
   for (let dim in sizes) {
