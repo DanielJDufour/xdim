@@ -39,5 +39,8 @@
   "homepage": "https://github.com/DanielJDufour/xdim#readme",
   "devDependencies": {
     "flug": "^2.0.0"
+  },
+  "dependencies": {
+    "iter-fun": "^0.1.2"
   }
 }
