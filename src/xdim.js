@@ -1,4 +1,5 @@
 const layoutCache = {};
+const { wrapNextFunction } = require("iter-fun");
 const preparedSelectFunctions = require("./prepared-select-funcs.js");
 const preparedUpdateFunctions = require("./prepared-update-funcs.js");
 
@@ -393,25 +394,70 @@ function prepareData({ fill = undefined, layout, useLayoutCache = true, sizes })
   return { data, shape };
 }
 
+// assume positive step
+function iterRange({ start = 0, end = 100 }) {
+  let i = start - 1;
+  end = end + 1;
+  return wrapNextFunction(function next() {
+    i++;
+    if (i === end) {
+      return { done: true };
+    } else {
+      return { done: false, value: i };
+    }
+  });
+}
+
+// iterate over all the points, saving memory vs array
+function iterPoints({ sizes }) {
+  // names sorted by shortest dimension to longest dimension
+  const names = Object.keys(sizes).sort((a, b) => sizes[a] - sizes[b]);
+
+  const iters = new Array(names.length);
+  const current = {};
+  for (let i = 0; i < names.length - 1; i++) {
+    const name = names[i];
+    iters[i] = iterRange({ start: 1, end: sizes[name] - 1 });
+    current[name] = 0;
+  }
+  const lastName = names[names.length - 1];
+  iters[iters.length - 1] = iterRange({ start: 0, end: sizes[lastName] - 1 });
+  current[lastName] = -1;
+
+  // permutate
+  return wrapNextFunction(function next() {
+    for (let i = iters.length - 1; i >= 0; i--) {
+      const { value, done } = iters[i].next();
+
+      if (done) {
+        if (i === 0) {
+          // we have exhausted all of the permutations
+          return { done: true };
+        }
+      } else {
+        // add iters for the remaining dims
+        for (let ii = i + 1; ii < iters.length; ii++) {
+          iters[ii] = iterRange({ start: 1, end: sizes[names[ii]] - 1 });
+          current[names[ii]] = 0;
+        }
+
+        current[names[i]] = value;
+
+        return { value: current, done: false };
+      }
+    }
+  });
+}
+
 function transform({ data, fill, from, to, sizes, useLayoutCache = true }) {
   if (typeof from === "string") from = parse(from, { useLayoutCache });
   if (typeof to === "string") to = parse(to, { useLayoutCache });
 
   const { data: out_data } = prepareData({ fill, layout: to, sizes });
 
-  let points = [{}];
-  for (let dim in sizes) {
-    const len = sizes[dim];
-    const newPoints = [];
-    for (let i = 0; i < len; i++) {
-      points.forEach(pt => {
-        newPoints.push({ [dim]: i, ...pt });
-      });
-    }
-    points = newPoints;
-  }
+  const points = iterPoints({ sizes });
 
-  points.forEach(point => {
+  for (point of points) {
     const { value } = select({
       data,
       layout: from,
@@ -427,7 +473,7 @@ function transform({ data, fill, from, to, sizes, useLayoutCache = true }) {
       sizes,
       value
     });
-  });
+  }
 
   return { data: out_data };
 }
@@ -435,6 +481,8 @@ function transform({ data, fill, from, to, sizes, useLayoutCache = true }) {
 module.exports = {
   checkValidity,
   createMatrix,
+  iterRange,
+  iterPoints,
   matchSequences,
   parse,
   parseDimensions,
