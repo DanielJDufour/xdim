@@ -105,3 +105,6 @@ dist
 
 # Backup files
 *bak*
+
+# Other files
+pnpm-lock.yaml
