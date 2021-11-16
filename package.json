@@ -41,6 +41,6 @@
     "flug": "^2.0.0"
   },
   "dependencies": {
-    "iter-fun": "^0.1.2"
+    "iter-fun": "^0.2.0"
   }
 }
