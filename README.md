@@ -190,7 +190,7 @@ result is an object
 ```
 
 ## iterClip
-Like [clip](#clip), but returns a flat iterator of values.  Useful if you want to minimize memory usage and creating a new array.
+Like [clip](#clip), but returns a flat iterator of values.  Useful if you want to minimize memory usage and avoid creating a new array.
 ```javascript
 import { iterClip } from 'xdim';
 
