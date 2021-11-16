@@ -37,7 +37,7 @@ The layout could be described as `"[row,column,band]"`.
 
 
 # usage
-This library provides the following functions: [select](#select), [prepareSelect](#prepareSelect), [clip](#clip), [transform](#transform), [prepareData](#prepareData), [update](#update), and [prepareUpdate](#prepareUpdate).
+This library provides the following functions: [select](#select), [prepareSelect](#prepareSelect), [clip](#clip), [iterClip](#iterClip), [transform](#transform), [prepareData](#prepareData), [update](#update), and [prepareUpdate](#prepareUpdate).
 
 ## select
 Select is used to get the value at a given multi-dimensional point.  The point is an object where each key is the name of a dimension with an index number.  Index numbers start at zero and increase until we reach the end of the length in the dimension.
@@ -189,7 +189,49 @@ result is an object
 }
 ```
 
+## iterClip
+Like [clip](#clip), but returns a flat iterator of values.  Useful if you want to minimize memory usage and creating a new array.
+```javascript
+import { iterClip } from 'xdim';
 
+// satellite imagery data broken down by band
+const data = [
+  [0, 123, 123, 162, ...], // red band
+  [213, 41, 62, 124, ...], // green band
+  [84, 52, 124, 235, ...] // blue band
+];
+
+const result = iterClip({
+  data,
+
+  // each band is a separate array
+  // the values in a band are in row-major order
+  layout: "[band][row,column]",
+  
+  sizes: {
+    band: 3, // image has 3 bands (red, green, and blue)
+    column: 100 // image is 100 pixels wide
+  },
+ 
+  rect: {
+    band: [2, 2], // 3rd band (blue), where band index starts at zero
+    row: [55, 74], // from the 56th to the 75th row (counting from the top)
+    column: [60, 62] // from the 61st to the 63rd column (counting from the left)
+  }
+});
+```
+result is an iterator object
+```js
+
+// call the first value
+result.next();
+// { done: false, next: 64}
+
+// you can also use for of syntax
+for (let n of result) {
+  // n is a number 27, then 19, then 23
+}
+```
 
 ## transform
 If your data is a one dimensional array, you can transform to another using the transform function.

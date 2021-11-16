@@ -162,7 +162,35 @@ function prepareUpdate({ useLayoutCache = true, data, layout, sizes = {} }) {
   };
 }
 
-function clip({ useLayoutCache = true, data, layout, rect, sizes = {}, flat = false }) {
+function iterClip({ data, layout, rect = {}, sizes = {}, useLayoutCache = true }) {
+  if (!data) throw new Error("[xdim] must specify data");
+  if (!layout) throw new Error("[xdim] must specify layout");
+  const points = iterPoints({ sizes, rect });
+  return wrapNextFunction(function next() {
+    const { value: point, done } = points.next();
+    if (done) {
+      return { done: true };
+    } else {
+      const { value } = select({ data, layout, point, sizes, useLayoutCache });
+      return { done: false, value };
+    }
+  });
+}
+
+function validateRect({ rect = {} }) {
+  if (rect) {
+    for (let key in rect) {
+      const value = rect[key];
+      if (value.length !== 2) throw new Error(`[xdim] uh oh. invalid hyper-rectangle`);
+      const [start, end] = value;
+      if (start > end) throw new Error(`[xdim] uh oh. invalid range for "${key}".  Start of ${start} can't be greater than end of ${end}.`);
+    }
+  }
+}
+
+function clip({ useLayoutCache = true, data, layout, rect, sizes = {}, flat = false, validate = true }) {
+  if (validate) validateRect({ rect });
+
   if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
 
   let datas = [data];
@@ -409,7 +437,7 @@ function iterRange({ start = 0, end = 100 }) {
 }
 
 // iterate over all the points, saving memory vs array
-function iterPoints({ sizes }) {
+function iterPoints({ sizes, rect = {} }) {
   // names sorted by shortest dimension to longest dimension
   const names = Object.keys(sizes).sort((a, b) => sizes[a] - sizes[b]);
 
@@ -417,12 +445,14 @@ function iterPoints({ sizes }) {
   const current = {};
   for (let i = 0; i < names.length - 1; i++) {
     const name = names[i];
-    iters[i] = iterRange({ start: 1, end: sizes[name] - 1 });
-    current[name] = 0;
+    const [start, end] = rect[name] || [0, sizes[name] - 1];
+    iters[i] = iterRange({ start: start + 1, end });
+    current[name] = start;
   }
   const lastName = names[names.length - 1];
-  iters[iters.length - 1] = iterRange({ start: 0, end: sizes[lastName] - 1 });
-  current[lastName] = -1;
+  const [start, end] = rect[lastName] || [0, sizes[lastName] - 1];
+  iters[iters.length - 1] = iterRange({ start: start, end });
+  current[lastName] = start - 1;
 
   // permutate
   return wrapNextFunction(function next() {
@@ -437,8 +467,10 @@ function iterPoints({ sizes }) {
       } else {
         // add iters for the remaining dims
         for (let ii = i + 1; ii < iters.length; ii++) {
-          iters[ii] = iterRange({ start: 1, end: sizes[names[ii]] - 1 });
-          current[names[ii]] = 0;
+          const nameii = names[ii];
+          const [start, end] = rect[nameii] || [0, sizes[nameii] - 1];
+          iters[ii] = iterRange({ start: start + 1, end });
+          current[nameii] = start;
         }
 
         current[names[i]] = value;
@@ -481,6 +513,7 @@ function transform({ data, fill, from, to, sizes, useLayoutCache = true }) {
 module.exports = {
   checkValidity,
   createMatrix,
+  iterClip,
   iterRange,
   iterPoints,
   matchSequences,
@@ -496,5 +529,6 @@ module.exports = {
   select,
   transform,
   update,
-  clip
+  clip,
+  validateRect
 };
