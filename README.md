@@ -217,7 +217,12 @@ const result = iterClip({
     band: [2, 2], // 3rd band (blue), where band index starts at zero
     row: [55, 74], // from the 56th to the 75th row (counting from the top)
     column: [60, 62] // from the 61st to the 63rd column (counting from the left)
-  }
+  },
+
+  // optional
+  // order to return point values
+  // in left-to-right major order
+  order: ["band", "row", "column"]
 });
 ```
 result is an iterator object

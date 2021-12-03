@@ -162,10 +162,10 @@ function prepareUpdate({ useLayoutCache = true, data, layout, sizes = {} }) {
   };
 }
 
-function iterClip({ data, layout, rect = {}, sizes = {}, useLayoutCache = true }) {
+function iterClip({ data, layout, order, rect = {}, sizes = {}, useLayoutCache = true }) {
   if (!data) throw new Error("[xdim] must specify data");
   if (!layout) throw new Error("[xdim] must specify layout");
-  const points = iterPoints({ sizes, rect });
+  const points = iterPoints({ order, sizes, rect });
   return wrapNextFunction(function next() {
     const { value: point, done } = points.next();
     if (done) {
@@ -437,9 +437,9 @@ function iterRange({ start = 0, end = 100 }) {
 }
 
 // iterate over all the points, saving memory vs array
-function iterPoints({ sizes, rect = {} }) {
+function iterPoints({ order, sizes, rect = {} }) {
   // names sorted by shortest dimension to longest dimension
-  const names = Object.keys(sizes).sort((a, b) => sizes[a] - sizes[b]);
+  const names = Array.isArray(order) ? order : Object.keys(sizes).sort((a, b) => sizes[a] - sizes[b]);
 
   const iters = new Array(names.length);
   const current = {};
