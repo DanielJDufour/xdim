@@ -481,11 +481,18 @@ function iterPoints({ order, sizes, rect = {} }) {
   });
 }
 
-function transform({ data, fill, from, to, sizes, useLayoutCache = true }) {
+function transform({ data, fill = undefined, from, to, sizes, useLayoutCache = true }) {
   if (typeof from === "string") from = parse(from, { useLayoutCache });
   if (typeof to === "string") to = parse(to, { useLayoutCache });
 
   const { data: out_data } = prepareData({ fill, layout: to, sizes });
+
+  const update = prepareUpdate({
+    useLayoutCache,
+    data: out_data,
+    layout: to,
+    sizes
+  });
 
   const points = iterPoints({ sizes });
 
@@ -499,10 +506,7 @@ function transform({ data, fill, from, to, sizes, useLayoutCache = true }) {
 
     // insert into new frame
     update({
-      data: out_data,
-      layout: to,
       point,
-      sizes,
       value
     });
   }

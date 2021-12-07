@@ -1,5 +1,5 @@
 const test = require("flug");
-const { prepareData, prepareSelect, select, update, prepareUpdate } = require("../src/xdim");
+const { prepareData, prepareSelect, select, update, prepareUpdate, transform } = require("../src/xdim");
 
 const sizes = { a: 4, b: 1e3, c: 1e3 };
 const layout = "[a][b][c]";
@@ -82,4 +82,15 @@ test("perf: prepareUpdate [band][row,column]", ({ eq }) => {
     }
   }
   console.timeEnd("perf: prepareUpdate [band][row,column]");
+});
+
+test("perf: transform [band][row,column] to [row,column,band]", ({ eq }) => {
+  console.time("perf: transform [band][row,column] to [row,column,band]");
+  transform({
+    data,
+    from: im_layout,
+    to: "[row,column,band]",
+    sizes: im_sizes
+  });
+  console.timeEnd("perf: transform [band][row,column] to [row,column,band]");
 });
