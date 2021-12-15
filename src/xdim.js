@@ -184,6 +184,7 @@ function validateRect({ rect = {} }) {
       if (value.length !== 2) throw new Error(`[xdim] uh oh. invalid hyper-rectangle`);
       const [start, end] = value;
       if (start > end) throw new Error(`[xdim] uh oh. invalid range for "${key}".  Start of ${start} can't be greater than end of ${end}.`);
+      if (start < 0) throw new Error(`[xdim] uh oh. invalid hyper-rectangle with start ${start}`);
     }
   }
 }

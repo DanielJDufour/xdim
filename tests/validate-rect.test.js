@@ -25,3 +25,15 @@ test("validating valid rectangle", ({ eq }) => {
   }
   eq(threw, false);
 });
+
+test("validating out of bounds", ({ eq }) => {
+  const rect = { band: [0, 0], row: [-6, 6], column: [1, 1] };
+
+  let msg;
+  try {
+    validateRect({ rect });
+  } catch (error) {
+    msg = error.message;
+  }
+  eq(msg, "[xdim] uh oh. invalid hyper-rectangle with start -6");
+});
