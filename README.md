@@ -255,7 +255,7 @@ const result = transform({
   sizes: {
     band: 4, // red, green, blue and alpha
     row: 768,
-    width: 1024
+    column: 1024
   }
 });
 ```
