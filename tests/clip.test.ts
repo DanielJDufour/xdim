@@ -1,5 +1,5 @@
-const test = require("flug");
-const { clip } = require("../src/xdim");
+import test from "flug";
+import { clip } from "../src/xdim";
 
 test("clip [band][row][column]", ({ eq }) => {
   const data = [

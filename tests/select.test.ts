@@ -1,32 +1,20 @@
-const test = require("flug");
-const { select } = require("../src/xdim");
+import test from "flug";
+import { select } from "../src/xdim";
 
 test("select all reds then all greens then all blues then all alphas in one flat array", ({ eq }) => {
   // assuming a 2x2 rgba image
   const data = [
     // reds
-    0,
-    1,
-    2,
-    3,
+    0, 1, 2, 3,
 
     // greens
-    4,
-    5,
-    6,
-    7,
+    4, 5, 6, 7,
 
     // blues
-    8,
-    9,
-    10,
-    11,
+    8, 9, 10, 11,
 
     // alphas
-    12,
-    13,
-    14,
-    15
+    12, 13, 14, 15
   ];
 
   const layout = "[band,row,column]";
@@ -45,7 +33,6 @@ test("select all reds then all greens then all blues then all alphas in one flat
 
   const result = select({
     data,
-    debugLevel: 0,
     layout,
     point,
     sizes
@@ -91,7 +78,7 @@ test("select on [band][row,column]", ({ eq }) => {
   const sizes = { column: 2 };
   const point = { band: 2, row: 1, column: 1 };
   // offset =  row * ncols + column
-  const result = select({ data, debugLevel: 0, layout, point, sizes });
+  const result = select({ data, layout, point, sizes });
   eq(result.value, 235);
 });
 
@@ -119,6 +106,6 @@ test("select on [band][row][column]", ({ eq }) => {
   const layout = "[band][row][column]";
   // bottom right and blue
   const point = { band: 2, row: 1, column: 1 };
-  const result = select({ data, debugLevel: 0, layout, point });
+  const result = select({ data, layout, point });
   eq(result.value, 235);
 });

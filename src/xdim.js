@@ -414,7 +414,11 @@ function prepareData({ fill = undefined, layout, useLayoutCache = true, sizes })
     if (it.type === "Vector") {
       return sizes[it.dim];
     } else if (it.type === "Matrix") {
-      return it.parts.reduce((total, part) => total * sizes[part.dim], 1);
+      return it.parts.reduce((total, part) => {
+        console.log("part.dim:", part.dim);
+        if (!(part.dim in sizes)) throw new Error(`[xdim] could not find "${part.dim}" in sizes: { ${Object.keys(sizes).join(", ")} }`);
+        return total * sizes[part.dim];
+      }, 1);
     }
   });
 

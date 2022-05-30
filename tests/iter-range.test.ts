@@ -1,5 +1,5 @@
-const test = require("flug");
-const { iterRange } = require("../src/xdim");
+import test from "flug";
+import { iterRange } from "../src/xdim";
 
 test("iter range", ({ eq }) => {
   const range = Array.from(iterRange({ start: 1, end: 9 }));

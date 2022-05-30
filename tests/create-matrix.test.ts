@@ -1,5 +1,5 @@
-const test = require("flug");
-const { createMatrix } = require("../src/xdim");
+import test from "flug";
+import { createMatrix } from "../src/xdim";
 
 test("create flat matrix / vector", ({ eq }) => {
   const matrix = createMatrix({ fill: 8, shape: [5] });
@@ -15,7 +15,7 @@ test("create table matrix", ({ eq }) => {
     true
   );
   eq(
-    matrix.every(sub => sub.every(it => it === 8)),
+    matrix.every(sub => sub.every((it: number) => it === 8)),
     true
   );
 });

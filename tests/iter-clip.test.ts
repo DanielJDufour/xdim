@@ -1,7 +1,7 @@
-const test = require("flug");
-const { iterClip } = require("../src/xdim");
+import test from "flug";
+import { iterClip } from "../src/xdim";
 
-const range = ct => new Array(ct).fill(0).map((_, i) => i);
+const range = (ct: number) => new Array(ct).fill(0).map((_, i) => i);
 
 const pixelDepth = 4;
 const height = 768;

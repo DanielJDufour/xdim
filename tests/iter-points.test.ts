@@ -1,5 +1,5 @@
-const test = require("flug");
-const { iterPoints } = require("../src/xdim");
+import test from "flug";
+import { iterPoints } from "../src/xdim";
 
 test("iter points", ({ eq }) => {
   const iter = iterPoints({ sizes: { band: 4, row: 768, column: 1024 } });

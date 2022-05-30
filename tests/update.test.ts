@@ -1,5 +1,5 @@
-const test = require("flug");
-const { update } = require("../src/xdim");
+import test from "flug";
+import { update } from "../src/xdim";
 
 test("simple updates", ({ eq }) => {
   // flat array of rgba values
@@ -18,7 +18,6 @@ test("simple updates", ({ eq }) => {
   const column = 1;
   update({
     data,
-    debugLevel: 0,
     layout: "[row,column,band]",
     point: {
       band,

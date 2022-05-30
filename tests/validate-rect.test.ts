@@ -1,5 +1,5 @@
-const test = require("flug");
-const { validateRect } = require("../src/xdim");
+import test from "flug";
+import { validateRect } from "../src/xdim";
 
 test("validating invalid rectangle", ({ eq }) => {
   const rect = { band: [0, 0], row: [6, 5], column: [1, 1] };
@@ -32,7 +32,7 @@ test("validating out of bounds", ({ eq }) => {
   let msg;
   try {
     validateRect({ rect });
-  } catch (error) {
+  } catch (error: any) {
     msg = error.message;
   }
   eq(msg, "[xdim] uh oh. invalid hyper-rectangle with start -6");

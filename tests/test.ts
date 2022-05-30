@@ -1,5 +1,5 @@
-const test = require("flug");
-const { matchSequences, parse, parseDimensions, parseSequences, parseVectors, removeBraces, removeParentheses } = require("../src/xdim");
+import test from "flug";
+import { matchSequences, parse, parseDimensions, parseSequences, parseVectors, removeBraces, removeParentheses } from "../src/xdim";
 
 test("parseDimensions", ({ eq }) => {
   eq(parseDimensions("[row][column]"), {

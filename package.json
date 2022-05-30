@@ -3,15 +3,19 @@
   "version": "1.5.2",
   "description": "Multi-Dimensional Functions. Create, Query, and Transform Multi-Dimensional Data.",
   "main": "src/xdim.js",
+  "types": "src/xdim.d.ts",
   "files": [
     "src/xdim.js",
+    "src/xdim.d.ts",
     "src/prepared-select-funcs.js",
     "src/prepared-update-funcs.js"
   ],
   "scripts": {
     "build": "node scripts/build.js",
-    "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write */*.js",
-    "test": "npm run build && for f in tests/*.js; do node $f; done"
+    "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write */*.js */*.ts",
+    "perf": "node tests/perf.js",
+    "test": "npm run test:ts && npm run perf",
+    "test:ts": "npm run build && for f in tests/*.ts; do npx ts-node $f; done"
   },
   "repository": {
     "type": "git",
@@ -37,10 +41,10 @@
     "url": "https://github.com/DanielJDufour/xdim/issues"
   },
   "homepage": "https://github.com/DanielJDufour/xdim#readme",
-  "devDependencies": {
-    "flug": "^2.0.0"
-  },
   "dependencies": {
     "iter-fun": "^0.2.0"
+  },
+  "devDependencies": {
+    "flug": "^2.3.1"
   }
 }

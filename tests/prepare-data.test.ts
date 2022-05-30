@@ -1,5 +1,5 @@
-const test = require("flug");
-const { prepareData } = require("../src/xdim");
+import test from "flug";
+import { prepareData } from "../src/xdim";
 
 test("prepareData ImageData.data", ({ eq }) => {
   const debugLevel = 0;
@@ -9,20 +9,32 @@ test("prepareData ImageData.data", ({ eq }) => {
     column: 1024,
     row: 768
   };
-  const result = prepareData({ debugLevel, layout, sizes });
+  const result = prepareData({ layout, sizes });
   eq(result.shape, [4 * 1024 * 768]);
   eq(result.data, new Array(4 * 1024 * 768).fill(undefined));
 });
 
+test("inconsistent variable checking", ({ eq }) => {
+  let msg;
+  try {
+    prepareData({
+      layout: "[row,column,band]",
+      sizes: { band: 4, height: 638, width: 860 }
+    });
+  } catch (error: any) {
+    msg = error.message;
+  }
+  eq(msg.includes("could not find"), true);
+});
+
 test("prepareData band * table", ({ eq }) => {
-  const debugLevel = 0;
   const layout = "[band][row,column]";
   const sizes = {
     band: 4,
     column: 1024,
     row: 768
   };
-  const result = prepareData({ debugLevel, layout, sizes });
+  const result = prepareData({ layout, sizes });
   eq(result.data.length, 4);
   eq(result.shape, [4, 1024 * 768]);
   eq(
@@ -32,16 +44,15 @@ test("prepareData band * table", ({ eq }) => {
 });
 
 test("prepareData: 3D", ({ eq }) => {
-  const debugLevel = 0;
   const layout = "[band][row][column]";
   const sizes = {
     band: 4,
     column: 1024,
     row: 768
   };
-  const result = prepareData({ debugLevel, layout, sizes });
-  eq(result.shape, [4, 768, 1024]);
-  eq(result.data.length, 4);
-  eq(result.data[0].length, 768);
-  eq(result.data[0][0].length, 1024);
+  const { data, shape } = prepareData({ layout, sizes });
+  eq(shape, [4, 768, 1024]);
+  eq(data.length, 4);
+  eq(data[0].length, 768);
+  eq(data[0][0].length, 1024);
 });

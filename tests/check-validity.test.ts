@@ -1,5 +1,5 @@
-const test = require("flug");
-const { checkValidity } = require("../src/xdim");
+import test from "flug";
+import { checkValidity } from "../src/xdim";
 
 test("valid", ({ eq }) => {
   const valid = checkValidity("[band][row,column]");
@@ -10,7 +10,7 @@ test("invalid", ({ eq }) => {
   let msg;
   try {
     checkValidity("[band,(row,column)]");
-  } catch (e) {
+  } catch (e: any) {
     msg = e.message;
   }
   eq(msg.includes("invalid"), true);
