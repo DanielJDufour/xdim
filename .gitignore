@@ -109,3 +109,4 @@ dist
 # Other files
 pnpm-lock.yaml
 .pnpm-store/
+.DS_Store
