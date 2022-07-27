@@ -5,16 +5,28 @@ test("select all reds then all greens then all blues then all alphas in one flat
   // assuming a 2x2 rgba image
   const data = [
     // reds
-    0, 1, 2, 3,
+    0,
+    1,
+    2,
+    3,
 
     // greens
-    4, 5, 6, 7,
+    4,
+    5,
+    6,
+    7,
 
     // blues
-    8, 9, 10, 11,
+    8,
+    9,
+    10,
+    11,
 
     // alphas
-    12, 13, 14, 15
+    12,
+    13,
+    14,
+    15
   ];
 
   const layout = "[band,row,column]";

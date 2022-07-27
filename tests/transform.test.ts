@@ -13,9 +13,10 @@ test("inflating image data", ({ eq }) => {
       row: 2
     }
   });
-  eq(result.data.length, 4);
-  eq(result.data[0].length, 2);
-  eq(result.data[0][0].length, 2);
-  eq(result.data[0][0][0], 0);
-  eq(result.data[0][1][1], 3);
+  const result_data = result.data as number[][][];
+  eq(result_data.length, 4);
+  eq(result_data[0].length, 2);
+  eq(result_data[0][0].length, 2);
+  eq(result_data[0][0][0], 0);
+  eq(result_data[0][1][1], 3);
 });

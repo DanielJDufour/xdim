@@ -1,7 +1,7 @@
 import test from "flug";
 import { iterClip } from "../src/xdim";
 
-const range = (ct: number) => new Array(ct).fill(0).map((_, i) => i);
+const range = ct => new Array(ct).fill(0).map((_, i) => i);
 
 const pixelDepth = 4;
 const height = 768;
@@ -23,10 +23,7 @@ test("iter clip with rect", ({ eq }) => {
   eq(iter.next().value, { b: 1, r: 1, c: 0 });
 
   let last;
-  let it;
-  while (((it = iter.next()), !it.done)) {
-    last = it.value;
-  }
+  for (last of iter);
   eq(last, { b: 3, r: 767, c: 1023 });
 });
 

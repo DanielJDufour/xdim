@@ -20,8 +20,8 @@ test("clip [band][row][column]", ({ eq }) => {
       [8, 9],
       [10, 11]
     ]
-  ];
-  const layout = "[band][row][column]";
+  ] as const;
+  const layout = "[band][row][column]" as const;
   const result = clip({
     data,
     layout,

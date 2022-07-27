@@ -1,21 +1,22 @@
-// export type data = Array<data>[];
+// export type data = Array<data | number | string>;
+// export type ReadOnlyData = Readonly<data>;
+import type {
+  MultidimensionalArray,
+  ReadonlyTuple,
+  Replace
+} from "type-fest";
 
-// export type data<T> = T extends number[] ? number[] : Array<T>[];
+// width modification from https://dev.to/tylim88/typescript-count-substring-of-a-string-literal-type-536b
+// prettier-ignore
+type Count<
+  str extends string,
+  substr extends string,
+  C extends unknown[] = []
+> = str extends `${string}${substr}${infer Tail}`
+  ? Count<Tail, substr, [1, ...C]>
+  : C['length'];
 
-// export type data<depth> = depth extends 1 ? number[] : data<(depth - 1)>;
-// export type data = number[] | number[][] | number[][][] | number[][][][];
-
-export type data = any[];
-
-// interface Iterable<T> {
-//   [Symbol.iterator](): Iterator<T>;
-
-// }
-
-// type NumberIterator = {
-//   [Symbol.iterator](): NumberIterator;
-//   next: () => { value: number, done: boolean };
-// };
+type NDIMS<layout extends string> = Count<layout, "[">;
 
 type NumberIterator = {
   [Symbol.iterator](): NumberIterator;
@@ -52,9 +53,9 @@ export type Matrix = {
 
 export function checkValidity(layout: string): true;
 
-export function createMatrix({ fill, shape }: { fill?: number; shape: number[] }): data;
+export function createMatrix<S extends Readonly<number[]>, F = undefined>({ fill, shape }: { fill?: F; shape: S }): MultidimensionalArray<F, S["length"]>;
 
-export function iterClip({
+export function iterClip<D>({
   data,
   layout,
   order,
@@ -62,7 +63,7 @@ export function iterClip({
   sizes,
   useLayoutCache
 }: {
-  data: data;
+  data: D;
   layout: string;
   order?: string[];
   rect: Rect;
@@ -74,10 +75,10 @@ export function iterRange({ start, end }: { start?: number; end?: number }): Num
 
 export function iterPoints({ order, sizes, rect }: { order?: string[]; sizes: Sizes; rect?: Rect }): NumberIterator;
 
-export function matchSequences(string): string[];
+export function matchSequences(string: string): string[];
 
 export function parse(
-  string,
+  string: string,
   { useLayoutCache }?: { useLayoutCache: boolean }
 ): {
   type: "Layout";
@@ -85,43 +86,61 @@ export function parse(
   dims: (Matrix | Vector)[];
 };
 
-export function parseDimensions(string): {
+export function parseDimensions(
+  string: string
+): {
   [dim: string]: {
     name: string;
   };
 };
 export function parseSequences(string: string): Matrix | Vector;
 export function parseVectors(string: string): string[];
-export function prepareData({ fill, layout, useLayoutCache, sizes }: { fill?: number; layout?: string; useLayoutCache?: boolean; sizes: Sizes }): {
-  shape: number[];
-  data: data;
-};
-export function prepareSelect({
+export function prepareData<
+  L extends Readonly<string>,
+  S extends ReadonlyTuple<number, NDIMS<L>>,
+  F = undefined
+>({
+  fill,
+  layout,
+  useLayoutCache,
+  sizes
+}: {
+  fill?: F | undefined;
+  layout: L;
+  useLayoutCache?: boolean;
+  sizes: Sizes;
+}): {
+  shape: S,
+  data: ReturnType<typeof createMatrix<S, F>>
+}
+
+export function prepareSelect<D>({
   useLayoutCache,
   data,
   layout,
   sizes
 }: {
   useLayoutCache?: boolean;
-  data: data;
+  data: D;
   layout: string;
   sizes: Sizes;
 }): ({ point }: { point: Point }) => Selection;
-export function prepareUpdate({
+
+export function prepareUpdate<D>({
   useLayoutCache,
   data,
   layout,
   sizes
 }: {
   useLayoutCache?: boolean;
-  data: data;
+  data: D;
   layout: string;
   sizes: Sizes;
 }): ({ point, value }: { point: Point; value: number }) => void;
-export function removeBraces(string: string): string;
-export function removeParentheses(string: string): string;
+export function removeBraces<S extends string>(string: S): Replace<Replace<S, "[", "">, "]", "">;
+export function removeParentheses<S extends string>(string: S): Replace<Replace<S, "(", "">, ")", "">;
 
-export function select({
+export function select<D>({
   useLayoutCache,
   data,
   layout,
@@ -129,13 +148,13 @@ export function select({
   sizes
 }: {
   useLayoutCache?: boolean;
-  data: data;
+  data: D;
   layout: string;
   point: Point;
   sizes?: Sizes;
 }): Selection;
 
-export function transform({
+export function transform<DATA_IN, DATA_OUT>({
   data,
   fill,
   from,
@@ -143,15 +162,15 @@ export function transform({
   sizes,
   useLayoutCache
 }: {
-  data: data;
+  data: DATA_IN;
   fill?: number;
   from: string;
   to: string;
   sizes: Sizes;
   useLayoutCache?: boolean;
-}): { data };
+}): { data: DATA_OUT };
 
-export function update({
+export function update<D>({
   useLayoutCache,
   data,
   layout,
@@ -160,14 +179,14 @@ export function update({
   value
 }: {
   useLayoutCache?: boolean;
-  data: data;
+  data: D;
   layout: string;
   point: Point;
   sizes: Sizes;
   value: number;
 }): void;
 
-export function clip({
+export function clip<D, L extends string, F extends boolean = false>({
   useLayoutCache,
   data,
   layout,
@@ -177,12 +196,14 @@ export function clip({
   validate
 }: {
   useLayoutCache?: boolean;
-  data: data;
-  layout: string;
+  data: D;
+  layout: L;
   rect: Rect;
   sizes: Sizes;
-  flat?: boolean;
+  flat?: F;
   validate?: boolean;
-}): { data: data };
+}): {
+  data: F extends true ? number[] : MultidimensionalArray<number, NDIMS<L>>
+};
 
 export function validateRect({ rect }: { rect: Rect }): void;

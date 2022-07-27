@@ -10,7 +10,10 @@ test("iter points", ({ eq }) => {
   eq(iter.next().value, { band: 0, row: 1, column: 0 });
 
   let last;
-  for (last of iter);
+  let it;
+  while (((it = iter.next()), !it.done)) {
+    last = it.value;
+  }
   eq(last, { band: 3, row: 767, column: 1023 });
 });
 
@@ -23,7 +26,10 @@ test("iter points with rect", ({ eq }) => {
   eq(iter.next().value, { band: 1, row: 1, column: 0 });
 
   let last;
-  for (last of iter);
+  let it;
+  while (((it = iter.next()), !it.done)) {
+    last = it.value;
+  }
   eq(last, { band: 3, row: 767, column: 1023 });
 });
 
