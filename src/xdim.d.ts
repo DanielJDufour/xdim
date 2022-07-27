@@ -154,7 +154,7 @@ export function select<D>({
   sizes?: Sizes;
 }): Selection;
 
-export function transform<DATA_IN, DATA_OUT>({
+export function transform<DATA_IN, DATA_OUT, L extends string>({
   data,
   fill,
   from,
@@ -165,10 +165,12 @@ export function transform<DATA_IN, DATA_OUT>({
   data: DATA_IN;
   fill?: number;
   from: string;
-  to: string;
+  to: L;
   sizes: Sizes;
   useLayoutCache?: boolean;
-}): { data: DATA_OUT };
+}): {
+  data: MultidimensionalArray<number, NDIMS<L>>
+ };
 
 export function update<D>({
   useLayoutCache,

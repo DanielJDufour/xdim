@@ -13,7 +13,7 @@ test("inflating image data", ({ eq }) => {
       row: 2
     }
   });
-  const result_data = result.data as number[][][];
+  const result_data = result.data;
   eq(result_data.length, 4);
   eq(result_data[0].length, 2);
   eq(result_data[0][0].length, 2);
