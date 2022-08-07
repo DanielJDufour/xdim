@@ -15,9 +15,10 @@
     "f": "npm run format",
     "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write */*.js */*.ts",
     "perf": "node tests/perf.js",
-    "test": "npm run test:js && npm run test:ts && npm run perf",
+    "test": "npm run test:js && npm run test:ts && npm run test:types && npm run perf",
     "test:js": "npm run build && for f in tests/*.js; do node -r esm $f; done",
-    "test:ts": "npm run build && for f in tests/*.ts; do npx ts-node $f; done"
+    "test:ts": "npm run build && for f in tests/*.ts; do npx ts-node $f; done",
+    "test:types": "npx tsc --noEmit ./tests/*.ts"
   },
   "repository": {
     "type": "git",
@@ -48,6 +49,7 @@
     "type-fest": "^2.17.0"
   },
   "devDependencies": {
-    "flug": "^2.3.1"
+    "flug": "^2.3.1",
+    "typescript": "^4.7.4"
   }
 }
