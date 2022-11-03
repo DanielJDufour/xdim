@@ -13,7 +13,7 @@
   "scripts": {
     "build": "node scripts/build.js",
     "f": "npm run format",
-    "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write */*.js */*.ts",
+    "format": "sh -c \"npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write */*.js */*.ts; exit 0\"",
     "perf": "node tests/perf.js",
     "prepublish": "npm run format && npm run build && npm run test",
     "test": "npm run test:js && npm run test:ts && npm run test:types && npm run perf",
