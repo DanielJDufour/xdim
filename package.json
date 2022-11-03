@@ -15,6 +15,7 @@
     "f": "npm run format",
     "format": "npx prettier --arrow-parens=avoid --print-width=160 --trailing-comma=none --write */*.js */*.ts",
     "perf": "node tests/perf.js",
+    "prepublish": "npm run format && npm run build && npm run test",
     "test": "npm run test:js && npm run test:ts && npm run test:types && npm run perf",
     "test:js": "npm run build && for f in tests/*.js; do node -r esm $f; done",
     "test:ts": "npm run build && for f in tests/*.ts; do npx ts-node $f; done",
