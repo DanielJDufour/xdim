@@ -18,7 +18,7 @@
     "test": "npm run test:js && npm run test:ts && npm run test:types && npm run perf",
     "test:js": "npm run build && for f in tests/*.js; do node -r esm $f; done",
     "test:ts": "npm run build && for f in tests/*.ts; do npx ts-node $f; done",
-    "test:types": "npx tsc --noEmit ./tests/*.ts"
+    "test:types": "npx tsc --moduleResolution node --noEmit --target es2020 ./tests/*.ts"
   },
   "repository": {
     "type": "git",
