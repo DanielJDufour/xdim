@@ -2,16 +2,31 @@ import test from "flug";
 import { prepareData } from "../src/xdim";
 
 test("prepareData ImageData.data", ({ eq }) => {
-  const debugLevel = 0;
   const layout = "[row,column,band]";
   const sizes = {
     band: 4,
     column: 1024,
     row: 768
   };
-  const result = prepareData({ layout, sizes });
+  const result = prepareData({ fill: 9, layout, sizes, arrayTypes: ["Uint8ClampedArray"] });
   eq(result.shape, [4 * 1024 * 768]);
-  eq(result.data, new Array(4 * 1024 * 768).fill(undefined));
+  eq(result.data, new Uint8ClampedArray(4 * 1024 * 768).fill(9));
+});
+
+test("prepare multi-band data", ({ eq }) => {
+  const layout = "[band][row,column]";
+  const sizes = {
+    band: 4,
+    column: 1024,
+    row: 768
+  };
+  const result = prepareData({ fill: 9, layout, sizes, arrayTypes: ["Uint8ClampedArray"] });
+  eq(result.shape, [4, 1024 * 768]);
+  eq(result.data.length, 4);
+  eq(result.data[0].length, 1024 * 768);
+  eq(result.data.constructor.name, "Array");
+  eq(result.data[0].constructor.name, "Uint8ClampedArray");
+  eq(result.data[0][0], 9);
 });
 
 test("inconsistent variable checking", ({ eq }) => {

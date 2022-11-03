@@ -3,6 +3,24 @@ const { wrapNextFunction } = require("iter-fun");
 const preparedSelectFunctions = require("./prepared-select-funcs.js");
 const preparedUpdateFunctions = require("./prepared-update-funcs.js");
 
+const ARRAY_TYPES = {
+  Array,
+  Int8Array,
+  Uint8Array,
+  Uint8ClampedArray,
+  Int16Array,
+  Uint16Array,
+  Float32Array,
+  Float64Array
+};
+
+try {
+  ARRAY_TYPES.BigInt64Array = BigInt64Array;
+  ARRAY_TYPES.BigUint64Array = BigUint64Array;
+} catch (error) {
+  // pass
+}
+
 function parseDimensions(str) {
   const dims = {};
   const re = /[A-Za-z]+/g;
@@ -379,34 +397,40 @@ function select({ useLayoutCache = true, data, layout, point, sizes = {} }) {
   return { index, value, parent };
 }
 
-// add dimension to an array until the limit reaches zero
-function addDims({ arr, fill = undefined, lens }) {
+// add dimensions to an array until the limit reaches zero
+function addDims({ arr, fill = undefined, lens, arrayTypes }) {
   // no new dimensions to add
   if (lens.length === 0) return arr;
 
   const len = lens[0];
-  if (lens.length === 0) {
+  if (lens.length === 1) {
+    const lastArrayType = arrayTypes ? arrayTypes[arrayTypes.length - 1] : "Array";
     for (let i = 0; i < arr.length; i++) {
-      arr[i] = new Array(len).fill(fill);
+      arr[i] = new ARRAY_TYPES[lastArrayType](len).fill(fill);
     }
   } else {
     for (let i = 0; i < arr.length; i++) {
       const sub = new Array(len).fill(fill);
       arr[i] = sub;
-      addDims({ arr: sub, lens: lens.slice(1) });
+      addDims({ arr: sub, lens: lens.slice(1), arrayTypes });
     }
   }
   return arr;
 }
 
-function createMatrix({ fill = undefined, shape }) {
+// to-do: maybe only call fill if not undefined or default typed array value?
+function createMatrix({ fill = undefined, shape, arrayTypes }) {
   const len = shape[0];
+  if (shape.length === 1) {
+    const arrayType = arrayTypes ? arrayTypes[0] : "Array";
+    return new ARRAY_TYPES[arrayType](len).fill(fill);
+  }
   const arr = new Array(len).fill(fill);
-  return addDims({ arr, fill, lens: shape.slice(1) });
+  return addDims({ arr, fill, lens: shape.slice(1), arrayTypes });
 }
 
 // generates an in-memory data structure to hold the data
-function prepareData({ fill = undefined, layout, useLayoutCache = true, sizes }) {
+function prepareData({ fill = undefined, layout, useLayoutCache = true, sizes, arrayTypes }) {
   if (typeof layout === "string") layout = parse(layout, { useLayoutCache });
 
   // console.log("layout:", layout);
@@ -415,16 +439,15 @@ function prepareData({ fill = undefined, layout, useLayoutCache = true, sizes })
       return sizes[it.dim];
     } else if (it.type === "Matrix") {
       return it.parts.reduce((total, part) => {
-        console.log("part.dim:", part.dim);
         if (!(part.dim in sizes)) throw new Error(`[xdim] could not find "${part.dim}" in sizes: { ${Object.keys(sizes).join(", ")} }`);
         return total * sizes[part.dim];
       }, 1);
     }
   });
 
-  const data = createMatrix({ fill, shape });
+  const data = createMatrix({ fill, shape, arrayTypes });
 
-  return { data, shape };
+  return { data, shape, arrayTypes };
 }
 
 // assume positive step
@@ -520,6 +543,7 @@ function transform({ data, fill = undefined, from, to, sizes, useLayoutCache = t
 }
 
 module.exports = {
+  addDims,
   checkValidity,
   createMatrix,
   iterClip,

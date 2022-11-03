@@ -51,9 +51,19 @@ export type Matrix = {
   parts: (Vector | Matrix)[];
 };
 
+export type ArrayTypeString = "Array" | "Int8Array" | "Uint8Array" | "Uint8ClampedArray" | "Int16Array" | "Uint16Array" | "Float32Array" | "Float64Array" | "BigInt64Array" | "BigUint64Array";
+export type ArrayTypeStrings = ReadonlyArray<ArrayTypeString>;
+
+export function addDims<A extends Array<any>>({ arr, fill, lens, arrayTypes }: {
+  arr: A,
+  fill?: undefined | number | string,
+  lens?: number[],
+  arrayTypes?: ArrayTypeStrings
+}): A;
+
 export function checkValidity(layout: string): true;
 
-export function createMatrix<S extends Readonly<number[]>, F = undefined>({ fill, shape }: { fill?: F; shape: S }): MultidimensionalArray<F, S["length"]>;
+export function createMatrix<S extends Readonly<number[]>, F = undefined>({ fill, shape, arrayTypes }: { fill?: F; shape: S, arrayTypes?: ArrayTypeString[] | Readonly<Array<ArrayTypeString>> }): MultidimensionalArray<F, S["length"]>;
 
 export function iterClip<D>({
   data,
@@ -103,15 +113,18 @@ export function prepareData<
   fill,
   layout,
   useLayoutCache,
-  sizes
+  sizes,
+  arrayTypes
 }: {
   fill?: F | undefined;
   layout: L;
   useLayoutCache?: boolean;
   sizes: Sizes;
+  arrayTypes?: ArrayTypeStrings;
 }): {
   shape: S,
-  data: ReturnType<typeof createMatrix<S, F>>
+  data: ReturnType<typeof createMatrix<S, F>>,
+  arrayTypes
 }
 
 export function prepareSelect<D>({

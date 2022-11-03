@@ -304,7 +304,8 @@ const result = prepareData({
     band: 4,
     column: 1024,
     row: 768
-  }
+  },
+  arrayTypes: ["Array", "Array", "Int8Array"] // optional
 });
 ```
 Result is an object with an empty data object and shape array.  The data object holds the multi-dimensional array of arrays.
@@ -315,8 +316,8 @@ The shape array is an array that describes the actual length of the arrays used 
   data: [
     // first band
     [
-      [-99, -99, ... ], // band's first row of columns with length being the number of columns
-      [-99, -99, ... ], // band's second row
+      Int8Array[-99, -99, ... ], // band's first row of columns with length being the number of columns
+      Int8Array[-99, -99, ... ], // band's second row
       .
       .
       .
@@ -324,8 +325,8 @@ The shape array is an array that describes the actual length of the arrays used 
     
     // second band
     [
-      [-99, -99, ... ], // band's first row of columns with length being the number of columns
-      [-99, -99, ... ], // band's second row
+      Int8Array[-99, -99, ... ], // band's first row of columns with length being the number of columns
+      Int8Array[-99, -99, ... ], // band's second row
     ]
   ]
 ```

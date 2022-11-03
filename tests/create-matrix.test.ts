@@ -26,3 +26,36 @@ test("create table matrix", ({ eq }) => {
     true
   );
 });
+
+test("create flat Uint8Array", ({ eq }) => {
+  const arrayTypes = ["Uint8Array"] as const;
+  const matrix = createMatrix({ fill: 0, shape: [100] as const, arrayTypes });
+  eq(matrix.length, 100);
+  eq(matrix.constructor.name, arrayTypes[0]);
+});
+
+test("create 2-D Uint8Array", ({ eq }) => {
+  const arrayTypes = ["Array", "Uint8Array"] as const;
+  // like a 4-band raster with 10 width and 10 height
+  const matrix = createMatrix({ fill: 0, shape: [4, 10] as const, arrayTypes });
+  eq(matrix.length, 4);
+  eq(matrix.constructor.name, "Array");
+  eq(
+    matrix.every(subarray => subarray.length === 10),
+    true
+  );
+  eq(
+    matrix.every(subarray => subarray.constructor.name === "Uint8Array"),
+    true
+  );
+});
+
+test("create 3-D Uint8Array", ({ eq }) => {
+  // like a 4-band raster with 10 width and 10 height
+  const matrix = createMatrix({ fill: 0, shape: [4, 6, 8] as const, arrayTypes: ["Array", "Array", "Uint8Array"] });
+  eq(matrix.length, 4);
+  eq(matrix.constructor.name, "Array");
+  eq(matrix[0].length, 6);
+  eq(matrix[0][0].length, 8);
+  eq(matrix[0][0].constructor.name, "Uint8Array");
+});
