@@ -124,7 +124,7 @@ export function prepareData<
 }): {
   shape: S,
   data: ReturnType<typeof createMatrix<S, F>>,
-  arrayTypes
+  arrayTypes: ArrayTypeStrings
 }
 
 export function prepareSelect<D>({

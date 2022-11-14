@@ -19,7 +19,7 @@
     "test": "npm run test:js && npm run test:ts && npm run test:types && npm run perf",
     "test:js": "npm run build && for f in tests/*.js; do node -r esm $f; done",
     "test:ts": "npm run build && for f in tests/*.ts; do npx ts-node $f; done",
-    "test:types": "npx tsc --moduleResolution node --noEmit --target es2020 ./tests/*.ts"
+    "test:types": "npx tsc --moduleResolution node --noEmit --noImplicitAny --target es2020 ./tests/*.ts"
   },
   "repository": {
     "type": "git",
@@ -47,11 +47,11 @@
   "homepage": "https://github.com/DanielJDufour/xdim#readme",
   "dependencies": {
     "iter-fun": "^0.2.0",
-    "type-fest": "^2.17.0"
+    "type-fest": "^3.2.0"
   },
   "devDependencies": {
     "esm": "^3.2.25",
     "flug": "^2.3.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.4"
   }
 }
