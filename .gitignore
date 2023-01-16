@@ -110,3 +110,4 @@ dist
 pnpm-lock.yaml
 .pnpm-store/
 .DS_Store
+package-lock.json
