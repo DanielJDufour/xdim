@@ -59,3 +59,9 @@ test("create 3-D Uint8Array", ({ eq }) => {
   eq(matrix[0][0].length, 8);
   eq(matrix[0][0].constructor.name, "Uint8Array");
 });
+
+test("createMatrix: zero fill", ({ eq }) => {
+  const fill = 9;
+  const matrix = createMatrix({ fill, shape: [64, 64, 3] });
+  eq(matrix[0][0][0], fill);
+});

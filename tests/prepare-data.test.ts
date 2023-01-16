@@ -71,3 +71,17 @@ test("prepareData: 3D", ({ eq }) => {
   eq(data[0].length, 768);
   eq(data[0][0].length, 1024);
 });
+
+test("prepareData: zero fill", ({ eq }) => {
+  const fill = 9;
+  const { data } = prepareData({
+    fill,
+    layout: "[row][column][band]",
+    sizes: { band: 3, row: 64, column: 64 },
+    arrayTypes: undefined
+  });
+  eq(
+    data[0][0].every(n => n === fill),
+    true
+  );
+});

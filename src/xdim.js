@@ -412,7 +412,7 @@ function addDims({ arr, fill = undefined, lens, arrayTypes }) {
     for (let i = 0; i < arr.length; i++) {
       const sub = new Array(len).fill(fill);
       arr[i] = sub;
-      addDims({ arr: sub, lens: lens.slice(1), arrayTypes });
+      addDims({ arr: sub, fill, lens: lens.slice(1), arrayTypes });
     }
   }
   return arr;
@@ -422,7 +422,8 @@ function addDims({ arr, fill = undefined, lens, arrayTypes }) {
 function createMatrix({ fill = undefined, shape, arrayTypes }) {
   const len = shape[0];
   if (shape.length === 1) {
-    const arrayType = arrayTypes ? arrayTypes[0] : "Array";
+    if (Array.isArray(arrayTypes) && arrayTypes.length !== 1) throw new Error("[xdim] shape and arrayTypes have different lengths");
+    const arrayType = Array.isArray(arrayTypes) ? arrayTypes[0] : "Array";
     return new ARRAY_TYPES[arrayType](len).fill(fill);
   }
   const arr = new Array(len).fill(fill);
